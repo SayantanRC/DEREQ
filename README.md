@@ -32,7 +32,7 @@ In the <b>"Enter request url"</b>, enter : http://localhost:2000/open
 3. Select <b>raw</b> radiobutton
 4. Click on the dropdown "Text" and select "JSON(application/json)"
 5. In the text box enter
-> {
+> {  
 > "DeviceID" : "M203",  
 > "DeviceName" : "Motorola Moto X4",  
 > "ScreenSize" : 5.2,  

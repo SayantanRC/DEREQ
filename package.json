@@ -1,0 +1,9 @@
+{
+  "name": "untitled",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": "^4.16.3",
+    "joi": "^13.4.0",
+    "mongodb": "latest"
+  }
+}

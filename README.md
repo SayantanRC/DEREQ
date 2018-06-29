@@ -12,7 +12,7 @@ Install Postman : https://www.getpostman.com/apps
 
 1. Open Postman
 2. Run this file
-3. Top left corner, Select dropdown and click <b>GET<b/> (other options are POST, PUT, DELETE etc.)
+3. Top left corner, Select dropdown and click <b>GET</b> (other options are POST, PUT, DELETE etc.)
 4. In the <b>Enter request url</b>, enter : http://localhost:2000/
 5. Press enter
 

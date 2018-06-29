@@ -21,10 +21,10 @@ In the text box below url, enter:
 > {  
 >"DeviceID" : "M203",  
 >"DeviceName" : "Motorola Moto X4",  
->"ScreenSize" : 5.2
+>"ScreenSize" : 5.2  
 >}
   
-In the <b>Enter request url</b>, enter : [http://localhost:2000/add/device](http://localhost:2000/add/device)
+In the <b>Enter request url</b>, enter : [http://localhost:2000/add/device](http://localhost:2000/add/device)  
 Press <b>Send</b>
 
 Other devices can be similarly added

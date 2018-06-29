@@ -4,6 +4,6 @@
   "dependencies": {
     "express": "^4.16.3",
     "joi": "^13.4.0",
-    "mongodb": "latest"
+    "mongodb": "~3.0.8"
   }
 }

@@ -47,7 +47,7 @@ Press <b>Send</b>
 In the text box below url, enter:
 > {  
 >"DeviceID" : "M203",  
->"WaterResitance" : true
+>"WaterResitance" : true  
 >}
 
 ```

@@ -129,3 +129,9 @@ fabric.properties
 # Editor-based Rest Client
 .idea/httpRequests
 
+.idea/DEREQ.iml
+.idea/inspectionProfiles/
+.idea/jsLibraryMappings.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml

@@ -38,7 +38,7 @@ In the <b>"Enter request url"</b>, enter : http://localhost:2000/open
 > "ScreenSize" : 5.2,  
 > "WaterResistance" : true  
 > }
-6. In the <b>Enter request url</b>, enter : http://localhost:2000/add/devce
+6. In the <b>Enter request url</b>, enter : http://localhost:2000/add/device
 7. Press Enter/Send
 
 Other devices can be similarly added

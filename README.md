@@ -39,7 +39,7 @@ In the text box below url, enter:
     
 `Note: Only "DeviceID" is allowed to be placed for a delete requist, no other fields`  
 
-In the <b>Enter request url</b>, enter : [http://localhost:2000/delete/device](http://localhost:2000/delete/device)  
+In the <b>Enter request url</b>, enter : [http://localhost:2000/delete/device](http://localhost:2000/delete/device)    
 Press <b>Send</b>  
 
 #### Update a device

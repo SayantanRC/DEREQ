@@ -6,7 +6,8 @@ This is a prototype... long way to finish...
 
 ### USAGE:
 
-Install Postman : [Get postman](https://www.getpostman.com/apps)
+1. Install Postman : [Get postman](https://www.getpostman.com/apps)  
+2. Run `Index.js`
 
 #### Common for all operations
 
@@ -45,14 +46,20 @@ Press <b>Send</b>
 #### Update a device
 
 In the text box below url, enter:
-> {  
+>{  
 >"DeviceID" : "M203",  
 >"WaterResitance" : true  
 >}
 
+`"DeviceID" is mandatory, any other fields placed will either be added or changed from previous value.`
 ```
-"DeviceID" is mandatory, any other fields placed will either be added or changed from previous value.  
-Removal of already present fields are not yet implemented, but will be available soon.  
+Removal of already present fields: pass null as field value.  
+Say in the above example, to remove "WaterResistance" field...  
+
+{  
+"DeviceID" : "M203",  
+"WaterResitance" : null  
+}
 ```  
   
 In the <b>Enter request url</b>, enter : [http://localhost:2000/update/device](http://localhost:2000/update/device)  

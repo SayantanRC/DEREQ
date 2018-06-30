@@ -127,9 +127,14 @@ class DBOperation {
                             callback(actionName, {"result": RESULT_ERROR, "response": "Validation error: " + err});
                         }
                         else if (res.length !== 0) {
-                            let updated_doc = res[0];
-                            for (let key in jsonData) {
-                                updated_doc[key] = jsonData[key];
+                            let combined_doc = res[0];
+                            for (let key1 in jsonData) {
+                                combined_doc[key1] = jsonData[key1];
+                            }
+                            let updated_doc = {};
+                            for (let key2 in combined_doc) {
+                                if (combined_doc[key2])
+                                    updated_doc[key2] = combined_doc[key2];
                             }
                             db.db(this.DBName).collection(collectionName).update(search_item, updated_doc, (err, res) => {
                                 db.close();
@@ -201,24 +206,25 @@ class DBOperation {
     addDevice(jsonDeviceData, callback) {
 
         let requiredSchema = {};
-        requiredSchema[KEY_DEVICE_NAME] = Joi.string().min(5).required();
+        requiredSchema[KEY_DEVICE_NAME] = Joi.string().min(3).required();
         requiredSchema[KEY_DEVICE_ID] = Joi.string().min(3).required();
 
         this.addToDB(jsonDeviceData, requiredSchema, true, COLLECTION_NAME_DEVICE, KEY_DEVICE_ID, ACTION_DEVICE_CREATE, callback);
     }
 
     updateDevice(jsonData, callback) {
-            const requiredSchema = {};
-            requiredSchema[KEY_DEVICE_ID] = Joi.string().min(3).required();
+        const requiredSchema = {};
+        requiredSchema[KEY_DEVICE_ID] = Joi.string().min(3).required();
+        requiredSchema[KEY_DEVICE_NAME] = Joi.string().min(3);
 
-            this.updateDB(jsonData, requiredSchema, true, COLLECTION_NAME_DEVICE, KEY_DEVICE_ID, ACTION_DEVICE_UPDATE, callback);
+        this.updateDB(jsonData, requiredSchema, true, COLLECTION_NAME_DEVICE, KEY_DEVICE_ID, ACTION_DEVICE_UPDATE, callback);
     }
 
     deleteDevice(jsonData, callback) {
-            const requiredSchema = {};
-            requiredSchema[KEY_DEVICE_ID] = Joi.string().min(3).required();
+        const requiredSchema = {};
+        requiredSchema[KEY_DEVICE_ID] = Joi.string().min(3).required();
 
-            this.deleteFromDB(jsonData, requiredSchema, COLLECTION_NAME_DEVICE, KEY_DEVICE_ID, ACTION_DEVICE_DELETE, callback);
+        this.deleteFromDB(jsonData, requiredSchema, COLLECTION_NAME_DEVICE, KEY_DEVICE_ID, ACTION_DEVICE_DELETE, callback);
     }
 
     addUnit(jsonUnitData, callback) {
@@ -259,6 +265,13 @@ class DBOperation {
             }
 
         });
+    }
+
+    deleteUnit(jsonData, callback){
+        const requiredSchema = {};
+        requiredSchema[KEY_UNIT_ID] = Joi.string().min(3).required();
+
+        this.deleteFromDB(jsonData, requiredSchema, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_UNIT_DELETE, callback);
     }
 
 }

@@ -58,6 +58,12 @@ expApp.post('/update/unit', (req, res) => {
     });
 });
 
+expApp.post('/delete/unit', (req, res) => {
+    DBOpObj.deleteUnit(req.body, (request, response) => {
+        genericDBoperatinHandler(request, response, res);
+    });
+});
+
 expApp.listen(appPort, () => {
     console.log("Listening...");
 });

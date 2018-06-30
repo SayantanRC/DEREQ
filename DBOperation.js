@@ -20,11 +20,21 @@ const RESULT_DUPLICATE_ID = "RESULT_DUPLICATE_ID";
 
 const COLLECTION_NAME_DEVICE = "device_collection";
 const COLLECTION_NAME_UNIT = "unit_collection";
+const COLLECTION_NAME_EMPLOYEE = "employee_collection";
 
 const KEY_DEVICE_ID = "DeviceID";
 const KEY_DEVICE_NAME = "DeviceName";
+
 const KEY_UNIT_ID = "UnitID";
 const KEY_EMPLOYEE_REGISTRATION_ID = "EmployeeRegistrationID";
+
+const KEY_EMPLOYEE_ID = "EmployeeID";
+const KEY_EMPLOYEE_NAME = "EmployeeName";
+const KEY_EMPLOYEE_MOBILE = "MobileNo";
+const KEY_EMPLOYEE_EMAIL = "Email";
+const KEY_EMPLOYEE_ISACTIVE = "IsActive";
+const KEY_EMPLOYEE_PASSWD = "Password";
+const KEY_EMPLOYEE_TOKEN = "Token";
 
 class DBOperation {
 
@@ -249,8 +259,8 @@ class DBOperation {
 
     updateUnit(jsonUnitData, callback){
         let search_item = {};
-        let id = jsonUnitData[KEY_DEVICE_ID];
-        if (id) search_item[KEY_DEVICE_ID] = id;
+        let dID = jsonUnitData[KEY_DEVICE_ID];
+        if (dID) search_item[KEY_DEVICE_ID] = dID;
         this.queryDB(COLLECTION_NAME_DEVICE, search_item, (request, response) => {
 
             if (response.result === RESULT_OK){

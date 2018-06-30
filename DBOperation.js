@@ -34,7 +34,7 @@ const KEY_EMPLOYEE_MOBILE = "MobileNo";
 const KEY_EMPLOYEE_EMAIL = "Email";
 const KEY_EMPLOYEE_ISACTIVE = "IsActive";
 const KEY_EMPLOYEE_PASSWD = "Password";
-const KEY_EMPLOYEE_TOKEN = "Token";
+const KEY_EMPLOYEE_TOKEN = "token";
 
 class DBOperation {
 

@@ -89,6 +89,18 @@ expApp.post('/delete/employee', (req, res) => {
     });
 });
 
+expApp.post('/unit/issue', (req, res) => {
+    DBOpObj.issueUnit(req.body, (request, response) => {
+        genericDBoperatinHandler(request, response, res);
+    });
+});
+
+expApp.post('/unit/submit', (req, res) => {
+    DBOpObj.submitUnit(req.body, (request, response) => {
+        genericDBoperatinHandler(request, response, res);
+    });
+});
+
 expApp.listen(appPort, () => {
     console.log("Listening...");
 });

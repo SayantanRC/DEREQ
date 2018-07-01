@@ -14,6 +14,8 @@ const ACTION_UNIT_DELETE = "DB_UNIT_DELETE";
 const ACTION_EMPLOYEE_CREATE = "DB_EMPLOYEE_CREATE";
 const ACTION_EMPLOYEE_UPDATE = "DB_EMPLOYEE_UPDATE";
 const ACTION_EMPLOYEE_DELETE = "DB_EMPLOYEE_DELETE";
+const ACTION_ISSUE_UNIT = "ISSUE_UNIT";
+const ACTION_SUBMIT_UNIT = "SUBMIT_UNIT";
 
 const RESULT_OK = "RESULT_OK";
 const RESULT_ERROR = "RESULT_ERROR";
@@ -320,17 +322,35 @@ class DBOperation {
         let search_item = {};
         let id = jsonUnitData[KEY_DEVICE_ID];
         if (id) search_item[KEY_DEVICE_ID] = id;
+
         this.queryDB(COLLECTION_NAME_DEVICE, search_item, (request, response) => {
+
             if (response.result === RESULT_OK){
+
                 let requiredSchema = {};
                 requiredSchema[KEY_UNIT_ID] = Joi.string().min(3).required();
                 requiredSchema[KEY_DEVICE_ID] = Joi.string().min(3).required();
                 requiredSchema[KEY_EMPLOYEE_REGISTRATION_ID] = Joi.any();
                 jsonUnitData[KEY_EMPLOYEE_REGISTRATION_ID] = "none";
+
                 this.addToDB(jsonUnitData, requiredSchema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_UNIT_CREATE, callback);
+
             }
+
+            else if (response.result === RESULT_NO_SUCH_DATA){
+
+                callback(ACTION_UNIT_CREATE, {
+                    "result": RESULT_NO_SUCH_DATA,
+                    "response": `${KEY_DEVICE_ID} : ${jsonUnitData[KEY_DEVICE_ID]}`
+                });
+
+            }
+
             else {
-                callback(ACTION_UNIT_CREATE, response)
+                callback(ACTION_UNIT_CREATE, {
+                    "result": RESULT_ERROR,
+                    "response": "Validation error " + response.response
+                })
             }
 
         });
@@ -344,37 +364,35 @@ class DBOperation {
         let requiredSchema = {};
         requiredSchema[KEY_UNIT_ID] = Joi.string().min(3);
         requiredSchema[KEY_DEVICE_ID] = Joi.string().min(3);
-        requiredSchema[KEY_EMPLOYEE_REGISTRATION_ID] = Joi.string().min(3);
 
         this.queryDB(COLLECTION_NAME_DEVICE, search_device, (request, response) => {
 
             if (response.result === RESULT_OK){
 
                 let eID = jsonUnitData[KEY_CHANGES][KEY_EMPLOYEE_REGISTRATION_ID];
-
-                if (eID && eID !== "none"){
-
-                    let search_emp = {};
-                    search_emp[KEY_EMPLOYEE_ID] = eID;
-
-                    this.queryDB(COLLECTION_NAME_EMPLOYEE, search_emp, (request, response) => {
-
-                        if (response.result === RESULT_OK){
-                            this.updateDB(jsonUnitData, requiredSchema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_UNIT_UPDATE, callback);
-                        }
-                        else {
-                            callback(ACTION_UNIT_UPDATE, response)
-                        }
-
-                    })
-
-                }
-                else {
+                if (!eID){
                     this.updateDB(jsonUnitData, requiredSchema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_UNIT_UPDATE, callback);
                 }
+                else {
+                    callback(ACTION_UNIT_UPDATE, {"result" : RESULT_BAD_DATA, "response" : `Use issueUnit() or submitUnit() to update ${KEY_EMPLOYEE_REGISTRATION_ID}`});
+                }
+
             }
+
+            else if (response.result === RESULT_NO_SUCH_DATA){
+
+                callback(ACTION_UNIT_CREATE, {
+                    "result": RESULT_NO_SUCH_DATA,
+                    "response": `${KEY_DEVICE_ID} : ${jsonUnitData[KEY_DEVICE_ID]}`
+                });
+
+            }
+
             else {
-                callback(ACTION_UNIT_UPDATE, response)
+                callback(ACTION_UNIT_CREATE, {
+                    "result": RESULT_ERROR,
+                    "response": "Validation error " + response.response
+                })
             }
 
         });
@@ -382,6 +400,68 @@ class DBOperation {
 
     deleteUnit(jsonUnitData, callback){
         this.deleteFromDB(jsonUnitData, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_UNIT_DELETE, callback);
+    }
+
+    issueUnit(jsonUnitData, callback){
+
+        let requiredSchema = {};
+        requiredSchema[KEY_UNIT_ID] = Joi.string().min(3).required();
+        requiredSchema[KEY_EMPLOYEE_REGISTRATION_ID] = Joi.string().min(3).required();
+
+        const result = Joi.validate(jsonUnitData, requiredSchema);
+
+        if (result.error) callback(ACTION_ISSUE_UNIT, {"result": RESULT_BAD_DATA, "response": result.error.details[0].message});
+        else {
+
+            let search_employee = {};
+            search_employee[KEY_EMPLOYEE_ID] = jsonUnitData[KEY_EMPLOYEE_REGISTRATION_ID];
+
+            let update_unit = {}, changes = {};
+            update_unit[KEY_UNIT_ID] = jsonUnitData[KEY_UNIT_ID];
+            changes[KEY_EMPLOYEE_REGISTRATION_ID] = jsonUnitData[KEY_EMPLOYEE_REGISTRATION_ID];
+            update_unit[KEY_CHANGES] = changes;
+
+            let schema = {};
+            schema[KEY_EMPLOYEE_REGISTRATION_ID] = Joi.string().min(3).required();
+
+            this.queryDB(COLLECTION_NAME_EMPLOYEE, search_employee, (request, response) => {
+
+                if (response.result === RESULT_OK) {
+                    this.updateDB(update_unit, schema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_ISSUE_UNIT, callback);
+                }
+
+                else if (response.result === RESULT_NO_SUCH_DATA) {
+
+                    callback(ACTION_ISSUE_UNIT, {
+                        "result": RESULT_NO_SUCH_DATA,
+                        "response": `${KEY_EMPLOYEE_REGISTRATION_ID} : ${jsonUnitData[KEY_EMPLOYEE_REGISTRATION_ID]}`
+                    });
+
+                }
+
+                else {
+                    callback(ACTION_ISSUE_UNIT, {
+                        "result": RESULT_ERROR,
+                        "response": "Validation error " + response.response
+                    })
+                }
+            })
+
+        }
+
+    }
+
+    submitUnit(jsonUnitData, callback){
+
+        let changes = {};
+        changes[KEY_EMPLOYEE_REGISTRATION_ID] = "none";
+        jsonUnitData[KEY_CHANGES] = changes;
+
+        const requiredSchema = {};
+        requiredSchema[KEY_EMPLOYEE_REGISTRATION_ID] = Joi.string().min(3);
+
+        this.updateDB(jsonUnitData, requiredSchema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_SUBMIT_UNIT, callback);
+
     }
 
     addEmployee(jsonEmployeeData, callback) {
@@ -425,6 +505,8 @@ module.exports.ACTION_DEVICE_DELETE = ACTION_DEVICE_DELETE;
 module.exports.ACTION_UNIT_CREATE = ACTION_UNIT_CREATE;
 module.exports.ACTION_UNIT_UPDATE = ACTION_UNIT_UPDATE;
 module.exports.ACTION_UNIT_DELETE = ACTION_UNIT_DELETE;
+module.exports.ACTION_ISSUE_UNIT = ACTION_ISSUE_UNIT;
+module.exports.ACTION_SUBMIT_UNIT = ACTION_SUBMIT_UNIT;
 
 module.exports.RESULT_OK = RESULT_OK;
 module.exports.RESULT_ERROR = RESULT_ERROR;

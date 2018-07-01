@@ -64,6 +64,31 @@ expApp.post('/delete/unit', (req, res) => {
     });
 });
 
+expApp.post('/query/employee/', (req, res) => {
+    DBOpObj.queryDB(DBOperation.COLLECTION_NAME_EMPLOYEE, req.body, (request, response) => {
+        genericDBoperatinHandler(request, response, res);
+    });
+});
+
+expApp.post('/add/employee', (req, res) => {
+    DBOpObj.addEmployee(req.body, (request, response) => {
+        genericDBoperatinHandler(request, response, res);
+    });
+});
+
+
+expApp.post('/update/employee', (req, res) => {
+    DBOpObj.updateEmployee(req.body, (request, response) => {
+        genericDBoperatinHandler(request, response, res);
+    });
+});
+
+expApp.post('/delete/employee', (req, res) => {
+    DBOpObj.deleteEmployee(req.body, (request, response) => {
+        genericDBoperatinHandler(request, response, res);
+    });
+});
+
 expApp.listen(appPort, () => {
     console.log("Listening...");
 });

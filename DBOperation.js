@@ -18,7 +18,7 @@ const ACTION_EMPLOYEE_DELETE = "DB_EMPLOYEE_DELETE";
 const RESULT_OK = "RESULT_OK";
 const RESULT_ERROR = "RESULT_ERROR";
 const RESULT_BAD_DATA = "RESULT_BAD_DATA";
-const RESULT_NO_SUCH_DEVICE = "RESULT_NO_SUCH_DEVICE";
+const RESULT_NO_SUCH_DATA = "RESULT_NO_SUCH_DATA";
 const RESULT_DUPLICATE_ID = "RESULT_DUPLICATE_ID";
 
 const COLLECTION_NAME_DEVICE = "device_collection";
@@ -62,8 +62,8 @@ class DBOperation {
                     else if (res.length === 0) {
                         db.close();
                         callback(ACTION_QUERY_COMPLETE, {
-                            "result": RESULT_NO_SUCH_DEVICE,
-                            "response": "No device with query params: " + JSON.stringify(jsonQuery)
+                            "result": RESULT_NO_SUCH_DATA,
+                            "response": "No data with query params: " + JSON.stringify(jsonQuery)
                         });
                     }
                     else {
@@ -73,7 +73,6 @@ class DBOperation {
                 });
             }
         });
-
     }
 
     addToDB(jsonData, requiredSchema, ifAllowUnknown, collectionName, uniqueIDName, actionName, callback){
@@ -81,11 +80,13 @@ class DBOperation {
         mongoConnector.onMongoConnect(this.DBUrl, callback, (db) => {
             if (db) {
 
-                let uDID = {}, uUID = {};
+                let uDID = {}, uUID = {}, uEID = {};
                 uDID[KEY_DEVICE_ID] = 1;
                 uUID[KEY_UNIT_ID] = 1;
+                uEID[KEY_EMPLOYEE_ID] = 1;
                 db.db(this.DBName).collection(COLLECTION_NAME_DEVICE).createIndex(uDID, {unique: true});
                 db.db(this.DBName).collection(COLLECTION_NAME_UNIT).createIndex(uUID, {unique: true});
+                db.db(this.DBName).collection(COLLECTION_NAME_EMPLOYEE).createIndex(uEID, {unique: true});
 
                 const result = Joi.validate(jsonData, requiredSchema, {allowUnknown: ifAllowUnknown});
 
@@ -97,7 +98,7 @@ class DBOperation {
 
                     this.queryDB(collectionName, search_item, (request, response) => {
 
-                        if (response.result === RESULT_NO_SUCH_DEVICE){
+                        if (response.result === RESULT_NO_SUCH_DATA){
 
                             db.db(this.DBName).collection(collectionName).insert(jsonData, (err, res) => {
                                 db.close();
@@ -142,12 +143,6 @@ class DBOperation {
         mongoConnector.onMongoConnect(this.DBUrl, callback, (db) => {
             if (db) {
 
-                let uDID = {}, uUID = {};
-                uDID[KEY_DEVICE_ID] = 1;
-                uUID[KEY_UNIT_ID] = 1;
-                db.db(this.DBName).collection(COLLECTION_NAME_DEVICE).createIndex(uDID, {unique: true});
-                db.db(this.DBName).collection(COLLECTION_NAME_UNIT).createIndex(uUID, {unique: true});
-
                 const preSchema = {};
                 preSchema[uniqueIDName] = Joi.required();
                 preSchema[KEY_CHANGES] = Joi.required();
@@ -174,7 +169,7 @@ class DBOperation {
 
                                 this.queryDB(collectionName, search_updated_id, (request, response2) => {
 
-                                    if (response2.result === RESULT_NO_SUCH_DEVICE) {
+                                    if (response2.result === RESULT_NO_SUCH_DATA) {
 
                                         let combined_doc = response1.response[0];
                                         for (let key1 in jsonData[KEY_CHANGES]) {
@@ -221,10 +216,10 @@ class DBOperation {
 
                         }
 
-                        else if (response1.result === RESULT_NO_SUCH_DEVICE){
+                        else if (response1.result === RESULT_NO_SUCH_DATA){
 
                             callback(actionName, {
-                                "result": RESULT_NO_SUCH_DEVICE,
+                                "result": RESULT_NO_SUCH_DATA,
                                 "response": `${uniqueIDName} : ${jsonData[uniqueIDName]}`
                             });
 
@@ -276,10 +271,10 @@ class DBOperation {
 
                         }
 
-                        else if (response.result === RESULT_NO_SUCH_DEVICE){
+                        else if (response.result === RESULT_NO_SUCH_DATA){
 
                             callback(actionName, {
-                                "result": RESULT_NO_SUCH_DEVICE,
+                                "result": RESULT_NO_SUCH_DATA,
                                 "response": `${uniqueIDName} : ${jsonData[uniqueIDName]}`
                             });
 
@@ -342,17 +337,41 @@ class DBOperation {
     }
 
     updateUnit(jsonUnitData, callback){
-        let search_item = {};
-        let dID = jsonUnitData[KEY_DEVICE_ID];
-        if (dID) search_item[KEY_DEVICE_ID] = dID;
-        this.queryDB(COLLECTION_NAME_DEVICE, search_item, (request, response) => {
+        let search_device = {};
+        let dID = jsonUnitData[KEY_CHANGES][KEY_DEVICE_ID];
+        if (dID) search_device[KEY_DEVICE_ID] = dID;
+
+        let requiredSchema = {};
+        requiredSchema[KEY_UNIT_ID] = Joi.string().min(3);
+        requiredSchema[KEY_DEVICE_ID] = Joi.string().min(3);
+        requiredSchema[KEY_EMPLOYEE_REGISTRATION_ID] = Joi.string().min(3);
+
+        this.queryDB(COLLECTION_NAME_DEVICE, search_device, (request, response) => {
 
             if (response.result === RESULT_OK){
-                let requiredSchema = {};
-                requiredSchema[KEY_UNIT_ID] = Joi.string().min(3);
-                requiredSchema[KEY_DEVICE_ID] = Joi.string().min(3);
-                requiredSchema[KEY_EMPLOYEE_REGISTRATION_ID] = Joi.string();
-                this.updateDB(jsonUnitData, requiredSchema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_UNIT_UPDATE, callback);
+
+                let eID = jsonUnitData[KEY_CHANGES][KEY_EMPLOYEE_REGISTRATION_ID];
+
+                if (eID && eID !== "none"){
+
+                    let search_emp = {};
+                    search_emp[KEY_EMPLOYEE_ID] = eID;
+
+                    this.queryDB(COLLECTION_NAME_EMPLOYEE, search_emp, (request, response) => {
+
+                        if (response.result === RESULT_OK){
+                            this.updateDB(jsonUnitData, requiredSchema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_UNIT_UPDATE, callback);
+                        }
+                        else {
+                            callback(ACTION_UNIT_UPDATE, response)
+                        }
+
+                    })
+
+                }
+                else {
+                    this.updateDB(jsonUnitData, requiredSchema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_UNIT_UPDATE, callback);
+                }
             }
             else {
                 callback(ACTION_UNIT_UPDATE, response)
@@ -410,7 +429,7 @@ module.exports.ACTION_UNIT_DELETE = ACTION_UNIT_DELETE;
 module.exports.RESULT_OK = RESULT_OK;
 module.exports.RESULT_ERROR = RESULT_ERROR;
 module.exports.RESULT_BAD_DATA = RESULT_BAD_DATA;
-module.exports.RESULT_NO_SUCH_DEVICE = RESULT_NO_SUCH_DEVICE;
+module.exports.RESULT_NO_SUCH_DATA = RESULT_NO_SUCH_DATA;
 module.exports.RESULT_DUPLICATE_ID = RESULT_DUPLICATE_ID;
 
 module.exports.COLLECTION_NAME_DEVICE = COLLECTION_NAME_DEVICE;

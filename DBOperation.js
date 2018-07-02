@@ -2,6 +2,7 @@
 const Joi = require('joi');
 const MongoConnector = require('./MongoConnector');
 const mongoConnector = new MongoConnector.MongoConnector();
+const Logger = require('./Logger');
 
 const ACTION_DB_OPEN = "DB_OPEN";
 const ACTION_QUERY_COMPLETE = "DB_QUERY_COMPLETE";
@@ -30,10 +31,21 @@ const COLLECTION_NAME_EMPLOYEE = "employee_collection";
 const KEY_CHANGES = "changes";
 
 const KEY_DEVICE_ID = "DeviceID";
+const KEY_DEVICE_TYPE = "DeviceType";
 const KEY_DEVICE_NAME = "DeviceName";
+const KEY_DEVICE_MAKE = "Make";
+const KEY_DEVICE_MODEL = "Model";
+const KEY_DEVICE_RAM = "RAM";
+const KEY_DEVICE_STORAGE = "Storage";
+const KEY_DEVICE_COMMENTS = "Comments";
 
 const KEY_UNIT_ID = "UnitID";
 const KEY_EMPLOYEE_REGISTRATION_ID = "EmployeeRegistrationID";
+const KEY_UNIT_OS = "OS";
+const KEY_UNIT_OS_VERSION = "OSVersion";
+const KEY_UNIT_ACCESSORY = "Accessories";
+const KEY_UNIT_ACCESSORY_STATUS = "AccessoryAvailabilityStatus";
+const KEY_UNIT_CONDITION = "UnitCondition";
 
 const KEY_EMPLOYEE_ID = "EmployeeID";
 const KEY_EMPLOYEE_NAME = "EmployeeName";
@@ -51,25 +63,29 @@ class DBOperation {
         this.port = port;
         this.DBName = DBname;
         this.DBUrl = `mongodb://${this.url}:${this.port}/`;
+
+        this.logger = new Logger.Logger(DBname, this.DBUrl);
     }
 
-    queryDB(collectionName, jsonQuery, callback) {
+    queryDB(collectionName, jsonQuery, callback, doLog) {
         mongoConnector.onMongoConnect(this.DBUrl, callback, (db) => {
             if (db) {
                 db.db(this.DBName).collection(collectionName).find(jsonQuery).toArray((err, res) => {
+                    db.close();
                     if (err) {
-                        db.close();
                         callback(ACTION_QUERY_COMPLETE, {"result": RESULT_ERROR, "response": err});
                     }
                     else if (res.length === 0) {
-                        db.close();
                         callback(ACTION_QUERY_COMPLETE, {
                             "result": RESULT_NO_SUCH_DATA,
                             "response": "No data with query params: " + JSON.stringify(jsonQuery)
                         });
                     }
                     else {
-                        db.close();
+                        if (doLog === true){
+                            this.logger.pushToLog(ACTION_QUERY_COMPLETE, collectionName, jsonQuery)
+                        }
+
                         callback(ACTION_QUERY_COMPLETE, {"result": RESULT_OK, "response": res});
                     }
                 });
@@ -111,6 +127,7 @@ class DBOperation {
                                     });
                                 }
                                 else {
+                                    this.logger.pushToLog(actionName, collectionName, jsonData);
                                     callback(actionName, {"result": RESULT_OK, "response": res})
                                 }
                             })
@@ -140,7 +157,7 @@ class DBOperation {
 
     }
 
-    updateDB(jsonData, requiredSchema, ifAllowUnknown, collectionName, uniqueIDName, actionName, callback){
+    updateDB(jsonData, requiredSchema, ifAllowUnknown, collectionName, uniqueIDName, actionName, callback, doNotLog){
 
         mongoConnector.onMongoConnect(this.DBUrl, callback, (db) => {
             if (db) {
@@ -192,7 +209,11 @@ class DBOperation {
                                                     "response": "Update error: " + err
                                                 });
                                             }
-                                            else callback(actionName, {"result": RESULT_OK, "response": res});
+                                            else {
+                                                if (doNotLog !== false)
+                                                    this.logger.pushToLog(actionName, collectionName, jsonData);
+                                                callback(actionName, {"result": RESULT_OK, "response": res});
+                                            }
                                         })
 
                                     }
@@ -201,7 +222,7 @@ class DBOperation {
                                         db.close();
                                         callback(actionName, {
                                             "result": RESULT_DUPLICATE_ID,
-                                            "response": `Changed ID ${updated_doc[uniqueIDName]} already exists.`
+                                            "response": `Changed ID ${jsonData[KEY_CHANGES][uniqueIDName]} already exists.`
                                         });
                                     }
 
@@ -268,7 +289,10 @@ class DBOperation {
                                     "result": RESULT_ERROR,
                                     "response": "Deletion error: " + err
                                 });
-                                else callback(actionName, {"result": RESULT_OK, "response": res});
+                                else {
+                                    this.logger.pushToLog(actionName, collectionName, jsonData);
+                                    callback(actionName, {"result": RESULT_OK, "response": res});
+                                }
                             });
 
                         }
@@ -299,16 +323,29 @@ class DBOperation {
     addDevice(jsonDeviceData, callback) {
 
         let requiredSchema = {};
-        requiredSchema[KEY_DEVICE_NAME] = Joi.string().min(3).required();
-        requiredSchema[KEY_DEVICE_ID] = Joi.string().min(3).required();
+        requiredSchema[KEY_DEVICE_ID] = Joi.string().required();
+        requiredSchema[KEY_DEVICE_TYPE] = Joi.string().required();
+        requiredSchema[KEY_DEVICE_MAKE] = Joi.string().required();
+        requiredSchema[KEY_DEVICE_MODEL] = Joi.string().required();
+        requiredSchema[KEY_DEVICE_NAME] = Joi.string().required();
+        requiredSchema[KEY_DEVICE_RAM] = Joi.number().required();
+        requiredSchema[KEY_DEVICE_STORAGE] = Joi.number().required();
+        requiredSchema[KEY_DEVICE_COMMENTS] = Joi.string().allow("").required();
 
         this.addToDB(jsonDeviceData, requiredSchema, true, COLLECTION_NAME_DEVICE, KEY_DEVICE_ID, ACTION_DEVICE_CREATE, callback);
     }
 
     updateDevice(jsonDeviceData, callback) {
+
         const requiredSchema = {};
-        requiredSchema[KEY_DEVICE_ID] = Joi.string().min(3);
-        requiredSchema[KEY_DEVICE_NAME] = Joi.string().min(3);
+        requiredSchema[KEY_DEVICE_ID] = Joi.string();
+        requiredSchema[KEY_DEVICE_TYPE] = Joi.string();
+        requiredSchema[KEY_DEVICE_MAKE] = Joi.string();
+        requiredSchema[KEY_DEVICE_MODEL] = Joi.string();
+        requiredSchema[KEY_DEVICE_NAME] = Joi.string();
+        requiredSchema[KEY_DEVICE_RAM] = Joi.number();
+        requiredSchema[KEY_DEVICE_STORAGE] = Joi.number();
+        requiredSchema[KEY_DEVICE_COMMENTS] = Joi.string().allow("");
 
         this.updateDB(jsonDeviceData, requiredSchema, true, COLLECTION_NAME_DEVICE, KEY_DEVICE_ID, ACTION_DEVICE_UPDATE, callback);
     }
@@ -331,6 +368,11 @@ class DBOperation {
                 requiredSchema[KEY_UNIT_ID] = Joi.string().min(3).required();
                 requiredSchema[KEY_DEVICE_ID] = Joi.string().min(3).required();
                 requiredSchema[KEY_EMPLOYEE_REGISTRATION_ID] = Joi.any();
+                requiredSchema[KEY_UNIT_OS] = Joi.string().required();
+                requiredSchema[KEY_UNIT_OS_VERSION] = Joi.number().required();
+                requiredSchema[KEY_UNIT_ACCESSORY] = Joi.array().items(Joi.string()).required();
+                requiredSchema[KEY_UNIT_ACCESSORY_STATUS] = Joi.string().valid('available', 'unavailable').required();
+                requiredSchema[KEY_UNIT_CONDITION] = Joi.string().valid('healthy', 'repair', 'dead').required();
                 jsonUnitData[KEY_EMPLOYEE_REGISTRATION_ID] = "none";
 
                 this.addToDB(jsonUnitData, requiredSchema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_UNIT_CREATE, callback);
@@ -361,16 +403,22 @@ class DBOperation {
         let dID = jsonUnitData[KEY_CHANGES][KEY_DEVICE_ID];
         if (dID) search_device[KEY_DEVICE_ID] = dID;
 
-        let requiredSchema = {};
-        requiredSchema[KEY_UNIT_ID] = Joi.string().min(3);
-        requiredSchema[KEY_DEVICE_ID] = Joi.string().min(3);
-
         this.queryDB(COLLECTION_NAME_DEVICE, search_device, (request, response) => {
 
             if (response.result === RESULT_OK){
 
                 let eID = jsonUnitData[KEY_CHANGES][KEY_EMPLOYEE_REGISTRATION_ID];
                 if (!eID){
+
+                    let requiredSchema = {};
+                    requiredSchema[KEY_UNIT_ID] = Joi.string().min(3);
+                    requiredSchema[KEY_DEVICE_ID] = Joi.string().min(3);
+                    requiredSchema[KEY_UNIT_OS] = Joi.string();
+                    requiredSchema[KEY_UNIT_OS_VERSION] = Joi.number();
+                    requiredSchema[KEY_UNIT_ACCESSORY] = Joi.array().items(Joi.string());
+                    requiredSchema[KEY_UNIT_ACCESSORY_STATUS] = Joi.string().valid('available', 'unavailable');
+                    requiredSchema[KEY_UNIT_CONDITION] = Joi.string().valid('healthy', 'repair', 'dead');
+
                     this.updateDB(jsonUnitData, requiredSchema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_UNIT_UPDATE, callback);
                 }
                 else {
@@ -427,7 +475,15 @@ class DBOperation {
             this.queryDB(COLLECTION_NAME_EMPLOYEE, search_employee, (request, response) => {
 
                 if (response.result === RESULT_OK) {
-                    this.updateDB(update_unit, schema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_ISSUE_UNIT, callback);
+
+                    this.updateDB(update_unit, schema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_ISSUE_UNIT, (request, response) => {
+
+                        if (response.result === RESULT_OK)
+                            this.logger.pushUnitTransaction(ACTION_ISSUE_UNIT, jsonUnitData[KEY_EMPLOYEE_REGISTRATION_ID], jsonUnitData[KEY_UNIT_ID], null);
+
+                        callback(request, response);
+
+                    }, false);
                 }
 
                 else if (response.result === RESULT_NO_SUCH_DATA) {
@@ -453,6 +509,10 @@ class DBOperation {
 
     submitUnit(jsonUnitData, callback){
 
+        let jsonDataCopy = {};
+        jsonDataCopy[KEY_UNIT_ID] = jsonUnitData[KEY_UNIT_ID];
+        let eid;
+
         let changes = {};
         changes[KEY_EMPLOYEE_REGISTRATION_ID] = "none";
         jsonUnitData[KEY_CHANGES] = changes;
@@ -460,7 +520,19 @@ class DBOperation {
         const requiredSchema = {};
         requiredSchema[KEY_EMPLOYEE_REGISTRATION_ID] = Joi.string().min(3);
 
-        this.updateDB(jsonUnitData, requiredSchema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_SUBMIT_UNIT, callback);
+        this.queryDB(COLLECTION_NAME_UNIT, jsonDataCopy, (request, response) => {
+
+            if (response.response[0])
+            eid = response.response[0][KEY_EMPLOYEE_REGISTRATION_ID];
+
+            this.updateDB(jsonUnitData, requiredSchema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_SUBMIT_UNIT, (request, response) => {
+                if (response.result === RESULT_OK)
+                    this.logger.pushUnitTransaction(ACTION_SUBMIT_UNIT, eid, jsonUnitData[KEY_UNIT_ID], null);
+
+                callback(request, response);
+            }, false);
+
+        });
 
     }
 
@@ -478,6 +550,7 @@ class DBOperation {
     }
 
     updateEmployee(jsonEmployeeData, callback) {
+
         const requiredSchema = {};
         requiredSchema[KEY_EMPLOYEE_NAME] = Joi.string().min(3);
         requiredSchema[KEY_EMPLOYEE_ID] = Joi.string().min(3);
@@ -517,3 +590,6 @@ module.exports.RESULT_DUPLICATE_ID = RESULT_DUPLICATE_ID;
 module.exports.COLLECTION_NAME_DEVICE = COLLECTION_NAME_DEVICE;
 module.exports.COLLECTION_NAME_UNIT = COLLECTION_NAME_UNIT;
 module.exports.COLLECTION_NAME_EMPLOYEE = COLLECTION_NAME_EMPLOYEE;
+
+module.exports.KEY_EMPLOYEE_REGISTRATION_ID = KEY_EMPLOYEE_REGISTRATION_ID;
+module.exports.KEY_UNIT_ID = KEY_UNIT_ID;

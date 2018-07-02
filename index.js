@@ -18,7 +18,7 @@ const genericDBoperatinHandler = (request, response, res) => {
 expApp.post('/query/device/', (req, res) => {
     DBOpObj.queryDB(DBOperation.COLLECTION_NAME_DEVICE, req.body, (request, response) => {
         genericDBoperatinHandler(request, response, res);
-    });
+    }, true);
 });
 
 expApp.post('/add/device', (req, res) => {
@@ -42,7 +42,7 @@ expApp.post('/delete/device', (req, res) => {
 expApp.post('/query/unit/', (req, res) => {
     DBOpObj.queryDB(DBOperation.COLLECTION_NAME_UNIT, req.body, (request, response) => {
         genericDBoperatinHandler(request, response, res);
-    });
+    }, true);
 });
 
 expApp.post('/add/unit', (req, res) => {
@@ -67,7 +67,7 @@ expApp.post('/delete/unit', (req, res) => {
 expApp.post('/query/employee/', (req, res) => {
     DBOpObj.queryDB(DBOperation.COLLECTION_NAME_EMPLOYEE, req.body, (request, response) => {
         genericDBoperatinHandler(request, response, res);
-    });
+    }, true);
 });
 
 expApp.post('/add/employee', (req, res) => {
@@ -99,6 +99,18 @@ expApp.post('/unit/submit', (req, res) => {
     DBOpObj.submitUnit(req.body, (request, response) => {
         genericDBoperatinHandler(request, response, res);
     });
+});
+
+expApp.post('/log/get', (req, res) => {
+   DBOpObj.logger.getLog(req.body, (request, response) => {
+       genericDBoperatinHandler(request, response, res);
+   })
+});
+
+expApp.post('/log/clear', (req, res) => {
+   DBOpObj.logger.clearLog((request, response) => {
+       genericDBoperatinHandler(request, response, res);
+   })
 });
 
 expApp.listen(appPort, () => {

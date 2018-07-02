@@ -5,6 +5,7 @@ class MongoConnector {
     onMongoConnect(url, parentCallback, DBOpCallback){
         mongoClient.connect(url, (err, db) => {
             if (err) {
+                if (parentCallback)
                 parentCallback(DBOperation.ACTION_DB_OPEN, {"result": DBOperation.RESULT_ERROR, "response": err.toString()});
             }
             else {

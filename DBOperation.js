@@ -37,14 +37,14 @@ const KEY_DEVICE_MAKE = "Make";
 const KEY_DEVICE_MODEL = "Model";
 const KEY_DEVICE_RAM = "RAM";
 const KEY_DEVICE_STORAGE = "Storage";
+const KEY_DEVICE_OS = "OS";
+const KEY_DEVICE_OS_VERSION = "OSVersion";
+const KEY_DEVICE_ACCESSORY = "Accessories";
+const KEY_DEVICE_ACCESSORY_STATUS = "AccessoryAvailabilityStatus";
 const KEY_DEVICE_COMMENTS = "Comments";
 
 const KEY_UNIT_ID = "UnitID";
 const KEY_EMPLOYEE_REGISTRATION_ID = "EmployeeRegistrationID";
-const KEY_UNIT_OS = "OS";
-const KEY_UNIT_OS_VERSION = "OSVersion";
-const KEY_UNIT_ACCESSORY = "Accessories";
-const KEY_UNIT_ACCESSORY_STATUS = "AccessoryAvailabilityStatus";
 const KEY_UNIT_CONDITION = "UnitCondition";
 
 const KEY_EMPLOYEE_ID = "EmployeeID";
@@ -54,7 +54,6 @@ const KEY_EMPLOYEE_EMAIL = "Email";
 const KEY_EMPLOYEE_ISACTIVE = "IsActive";
 const KEY_EMPLOYEE_ISADMIN = "IsAdmin";
 const KEY_EMPLOYEE_PASSWD = "Password";
-const KEY_EMPLOYEE_TOKEN = "token";
 
 class DBOperation {
 
@@ -330,6 +329,10 @@ class DBOperation {
         requiredSchema[KEY_DEVICE_NAME] = Joi.string().required();
         requiredSchema[KEY_DEVICE_RAM] = Joi.number().required();
         requiredSchema[KEY_DEVICE_STORAGE] = Joi.number().required();
+        requiredSchema[KEY_DEVICE_OS] = Joi.string().required();
+        requiredSchema[KEY_DEVICE_OS_VERSION] = Joi.number().required();
+        requiredSchema[KEY_DEVICE_ACCESSORY] = Joi.array().items(Joi.string()).required();
+        requiredSchema[KEY_DEVICE_ACCESSORY_STATUS] = Joi.string().valid('available', 'unavailable').required();
         requiredSchema[KEY_DEVICE_COMMENTS] = Joi.string().allow("").required();
 
         this.addToDB(jsonDeviceData, requiredSchema, true, COLLECTION_NAME_DEVICE, KEY_DEVICE_ID, ACTION_DEVICE_CREATE, callback);
@@ -345,6 +348,10 @@ class DBOperation {
         requiredSchema[KEY_DEVICE_NAME] = Joi.string();
         requiredSchema[KEY_DEVICE_RAM] = Joi.number();
         requiredSchema[KEY_DEVICE_STORAGE] = Joi.number();
+        requiredSchema[KEY_DEVICE_OS] = Joi.string();
+        requiredSchema[KEY_DEVICE_OS_VERSION] = Joi.number();
+        requiredSchema[KEY_DEVICE_ACCESSORY] = Joi.array().items(Joi.string());
+        requiredSchema[KEY_DEVICE_ACCESSORY_STATUS] = Joi.string().valid('available', 'unavailable');
         requiredSchema[KEY_DEVICE_COMMENTS] = Joi.string().allow("");
 
         this.updateDB(jsonDeviceData, requiredSchema, true, COLLECTION_NAME_DEVICE, KEY_DEVICE_ID, ACTION_DEVICE_UPDATE, callback);
@@ -368,10 +375,6 @@ class DBOperation {
                 requiredSchema[KEY_UNIT_ID] = Joi.string().min(3).required();
                 requiredSchema[KEY_DEVICE_ID] = Joi.string().min(3).required();
                 requiredSchema[KEY_EMPLOYEE_REGISTRATION_ID] = Joi.any();
-                requiredSchema[KEY_UNIT_OS] = Joi.string().required();
-                requiredSchema[KEY_UNIT_OS_VERSION] = Joi.number().required();
-                requiredSchema[KEY_UNIT_ACCESSORY] = Joi.array().items(Joi.string()).required();
-                requiredSchema[KEY_UNIT_ACCESSORY_STATUS] = Joi.string().valid('available', 'unavailable').required();
                 requiredSchema[KEY_UNIT_CONDITION] = Joi.string().valid('healthy', 'repair', 'dead').required();
                 jsonUnitData[KEY_EMPLOYEE_REGISTRATION_ID] = "none";
 
@@ -413,10 +416,6 @@ class DBOperation {
                     let requiredSchema = {};
                     requiredSchema[KEY_UNIT_ID] = Joi.string().min(3);
                     requiredSchema[KEY_DEVICE_ID] = Joi.string().min(3);
-                    requiredSchema[KEY_UNIT_OS] = Joi.string();
-                    requiredSchema[KEY_UNIT_OS_VERSION] = Joi.number();
-                    requiredSchema[KEY_UNIT_ACCESSORY] = Joi.array().items(Joi.string());
-                    requiredSchema[KEY_UNIT_ACCESSORY_STATUS] = Joi.string().valid('available', 'unavailable');
                     requiredSchema[KEY_UNIT_CONDITION] = Joi.string().valid('healthy', 'repair', 'dead');
 
                     this.updateDB(jsonUnitData, requiredSchema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_UNIT_UPDATE, callback);
@@ -546,6 +545,8 @@ class DBOperation {
         requiredSchema[KEY_EMPLOYEE_PASSWD] = Joi.string().min(6).required();
         requiredSchema[KEY_EMPLOYEE_ISADMIN] = Joi.boolean().required();
 
+        jsonEmployeeData[KEY_EMPLOYEE_ISACTIVE] = true;
+
         this.addToDB(jsonEmployeeData, requiredSchema, true, COLLECTION_NAME_EMPLOYEE, KEY_EMPLOYEE_ID, ACTION_EMPLOYEE_CREATE, callback);
     }
 
@@ -558,6 +559,7 @@ class DBOperation {
         requiredSchema[KEY_EMPLOYEE_MOBILE] = Joi.number().integer().min(10);
         requiredSchema[KEY_EMPLOYEE_PASSWD] = Joi.string().min(6);
         requiredSchema[KEY_EMPLOYEE_ISADMIN] = Joi.boolean();
+        requiredSchema[KEY_EMPLOYEE_ISACTIVE] = Joi.boolean();
 
         this.updateDB(jsonEmployeeData, requiredSchema, true, COLLECTION_NAME_EMPLOYEE, KEY_EMPLOYEE_ID, ACTION_EMPLOYEE_UPDATE, callback);
     }
@@ -592,4 +594,7 @@ module.exports.COLLECTION_NAME_UNIT = COLLECTION_NAME_UNIT;
 module.exports.COLLECTION_NAME_EMPLOYEE = COLLECTION_NAME_EMPLOYEE;
 
 module.exports.KEY_EMPLOYEE_REGISTRATION_ID = KEY_EMPLOYEE_REGISTRATION_ID;
+module.exports.KEY_EMPLOYEE_ID = KEY_EMPLOYEE_ID;
+module.exports.KEY_EMPLOYEE_ISADMIN = KEY_EMPLOYEE_ISADMIN;
 module.exports.KEY_UNIT_ID = KEY_UNIT_ID;
+module.exports.KEY_EMPLOYEE_ISACTIVE = KEY_EMPLOYEE_ISACTIVE;

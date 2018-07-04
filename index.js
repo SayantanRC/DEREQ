@@ -2,6 +2,7 @@ const exp = require('express');
 const expApp = exp();
 const DBOperation = require('./DBOperation');
 const authenticator = require('./Authenticator');
+const bcryptjs = require('bcryptjs');
 
 const appPort = 2000;
 const appUrl = "localhost";
@@ -90,11 +91,11 @@ expApp.post('/delete/unit', (req, res) => {
 });
 
 expApp.post('/query/employee/', (req, res) => {
-    authenticator.handleAuthorization(req, res, (tokenData) => {
+    //authenticator.handleAuthorization(req, res, (tokenData) => {
         DBOpObj.queryDB(DBOperation.COLLECTION_NAME_EMPLOYEE, req.body, (request, response) => {
             genericDBoperatinHandler(request, response, res);
         }, true);
-    });
+    //});
 });
 
 expApp.post('/add/employee', (req, res) => {
@@ -107,11 +108,11 @@ expApp.post('/add/employee', (req, res) => {
 
 
 expApp.post('/update/employee', (req, res) => {
-    authenticator.handleAuthorization(req, res, (tokenData) => {
+    //authenticator.handleAuthorization(req, res, (tokenData) => {
         DBOpObj.updateEmployee(req.body, (request, response) => {
             genericDBoperatinHandler(request, response, res);
         });
-    });
+    //});
 });
 
 expApp.post('/delete/employee', (req, res) => {
@@ -157,29 +158,42 @@ expApp.post('/log/clear', (req, res) => {
 expApp.post('/login', (req, res) => {
 
     let eid = req.body[DBOperation.KEY_EMPLOYEE_ID];
+    let passwd = req.body[DBOperation.KEY_EMPLOYEE_PASSWD];
+    if (!passwd) passwd = "";
 
     let query = {};
     query[DBOperation.KEY_EMPLOYEE_ID] = eid;
 
     DBOpObj.queryDB(DBOperation.COLLECTION_NAME_EMPLOYEE, query, (request, response) => {
+
         if (response.result === DBOperation.RESULT_OK){
 
-            let isActive = response.response[0][DBOperation.KEY_EMPLOYEE_ISACTIVE];
-            let isAdmin = response.response[0][DBOperation.KEY_EMPLOYEE_ISADMIN];
+            if (response.response[0][DBOperation.KEY_EMPLOYEE_ISACTIVE]) {
+                bcryptjs.compare(passwd, response.response[0][DBOperation.KEY_EMPLOYEE_PASSWD], (err, isMatch) => {
 
-            if (isActive) {
+                    if (isMatch) {
+                        let isActive = response.response[0][DBOperation.KEY_EMPLOYEE_ISACTIVE];
+                        let isAdmin = response.response[0][DBOperation.KEY_EMPLOYEE_ISADMIN];
 
-                authenticator.generateToken(eid, isAdmin, (token) => {
-                    res.json({
-                        token
-                    });
-                })
+                        if (isActive) {
 
+                            authenticator.generateToken(eid, isAdmin, (token) => {
+                                res.json({
+                                    token
+                                });
+                            })
+
+                        }
+                    }
+                    else {
+                        res.status(401).send("Wrong password");
+                    }
+                });
             }
-
             else {
-                res.status(401).send("Inactive account.");
+                res.status(401).send("Inactive account");
             }
+
         }
         else if (response.result === DBOperation.RESULT_ERROR) {
             res.status(500).send("Login token generation error");

@@ -3,6 +3,7 @@ const Joi = require('joi');
 const MongoConnector = require('./MongoConnector');
 const mongoConnector = new MongoConnector.MongoConnector();
 const Logger = require('./Logger');
+const bcryptjs = require('bcryptjs');
 
 const ACTION_DB_OPEN = "DB_OPEN";
 const ACTION_QUERY_COMPLETE = "DB_QUERY_COMPLETE";
@@ -545,6 +546,9 @@ class DBOperation {
         requiredSchema[KEY_EMPLOYEE_PASSWD] = Joi.string().min(6).required();
         requiredSchema[KEY_EMPLOYEE_ISADMIN] = Joi.boolean().required();
 
+        let passwd = jsonEmployeeData[KEY_EMPLOYEE_PASSWD];
+        if (passwd) jsonEmployeeData[KEY_EMPLOYEE_PASSWD] = bcryptjs.hashSync(passwd);
+
         jsonEmployeeData[KEY_EMPLOYEE_ISACTIVE] = true;
 
         this.addToDB(jsonEmployeeData, requiredSchema, true, COLLECTION_NAME_EMPLOYEE, KEY_EMPLOYEE_ID, ACTION_EMPLOYEE_CREATE, callback);
@@ -560,6 +564,10 @@ class DBOperation {
         requiredSchema[KEY_EMPLOYEE_PASSWD] = Joi.string().min(6);
         requiredSchema[KEY_EMPLOYEE_ISADMIN] = Joi.boolean();
         requiredSchema[KEY_EMPLOYEE_ISACTIVE] = Joi.boolean();
+
+        let passwd = jsonEmployeeData[KEY_CHANGES][KEY_EMPLOYEE_PASSWD];
+        let salt = bcryptjs.genSaltSync(10);
+        if (passwd) jsonEmployeeData[KEY_CHANGES][KEY_EMPLOYEE_PASSWD] = bcryptjs.hashSync(passwd, salt);
 
         this.updateDB(jsonEmployeeData, requiredSchema, true, COLLECTION_NAME_EMPLOYEE, KEY_EMPLOYEE_ID, ACTION_EMPLOYEE_UPDATE, callback);
     }
@@ -598,3 +606,4 @@ module.exports.KEY_EMPLOYEE_ID = KEY_EMPLOYEE_ID;
 module.exports.KEY_EMPLOYEE_ISADMIN = KEY_EMPLOYEE_ISADMIN;
 module.exports.KEY_UNIT_ID = KEY_UNIT_ID;
 module.exports.KEY_EMPLOYEE_ISACTIVE = KEY_EMPLOYEE_ISACTIVE;
+module.exports.KEY_EMPLOYEE_PASSWD = KEY_EMPLOYEE_PASSWD;

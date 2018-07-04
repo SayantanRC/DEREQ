@@ -16,51 +16,181 @@ This is a prototype... long way to finish...
 3. Select <b>raw</b> radiobutton
 4. Click on the dropdown <b>Text</b> and select <b>JSON(application/json)</b>
 
-#### Add a device
+#### Add a new employee/user
 
 In the text box below url, enter:
-> {  
->"DeviceID" : "M203",  
->"DeviceName" : "Motorola Moto X4",  
->"ScreenSize" : 5.2  
->}
+>{  
+	"EmployeeName" : "Samir Ghosh",  
+	"EmployeeID" : "sam121",  
+	"Email" : "samirghosh95@gmail.com",  
+	"MobileNo" : 9996454321,  
+	"Password" : "samirg111",  
+	"IsAdmin" : false  
+}
+
+In the <b>Enter request url</b>, enter : [http://localhost:2000/add/employee](http://localhost:2000/add/employee)  
+Press <b>Send</b>
+
+#### Login to get a token
+
+In the text box below url, enter:
+>{    
+	"EmployeeID" : "sam121",  
+	"Password" : "samirg111"  
+}
+
+In the <b>Enter request url</b>, enter : [http://localhost:2000/login](http://localhost:2000/login)  
+Press <b>Send</b>
+
+#### Add a device (ADMIN ONLY)
+
+In the text box below url, enter:
+>{  
+ 	"DeviceID" : "IPX",  
+ 	"DeviceType" : "mobile",  
+ 	"DeviceName" : "iPhone X",  
+ 	"Make" : "Apple",  
+ 	"Model" : "A1901",  
+ 	"RAM" : 3,  
+ 	"Storage" : 256,  
+ 	"OS" : "iOS",  
+ 	"OSVersion" : 11,  
+ 	"Accessories" : ["airpods", "charger"],  
+ 	"AccessoryAvailabilityStatus" : "available",  
+ 	"Comments" : ""  
+}
   
 In the <b>Enter request url</b>, enter : [http://localhost:2000/add/device](http://localhost:2000/add/device)  
 Press <b>Send</b>
 
 Other devices can be similarly added
 
-#### Delete a device
+#### Update a device (ADMIN ONLY)
+
+In the text box below url, enter:
+>{  
+      "DeviceID": "IPX",  
+      "changes" :  
+      {  
+      	"DeviceID": "IP_X",  
+      	"OSVersion" : 12,  
+      	"WaterResistance" : true  
+      }  
+ }
+
+`"DeviceID" is mandatory, any other fields to be added must be put inside "changes" : {}.`
+```
+Removal of already present (non-essential) fields: pass null as field value.  
+Say in the above example, to remove "WaterResistance" field...  
+
+{  
+"DeviceID" : "IP_X",  
+"changes" : { "WaterResitance" : null }    
+}
+```  
+  
+In the <b>Enter request url</b>, enter : [http://localhost:2000/update/device](http://localhost:2000/update/device)  
+Press <b>Send</b>
+
+#### Query devices
+
+In the text box below url, enter:
+>{  
+ 	"RAM" : 3,  
+ 	"Storage" : 256  
+ }
+  
+In the <b>Enter request url</b>, enter : [http://localhost:2000/query/device](http://localhost:2000/query/device)  
+Press <b>Send</b>
+
+#### Delete a device (ADMIN ONLY)
 
 In the text box below url, enter:
 
->{    
->"DeviceID" : "M203"  
->}  
+>{  
+ 	"DeviceID" : "IPX"  
+ }
     
 `Note: Only "DeviceID" is allowed to be placed for a delete requist, no other fields`  
 
 In the <b>Enter request url</b>, enter : [http://localhost:2000/delete/device](http://localhost:2000/delete/device)  
 Press <b>Send</b>  
 
-#### Update a device
+#### Add a unit (ADMIN ONLY)
 
 In the text box below url, enter:
 >{  
->"DeviceID" : "M203",  
->"WaterResitance" : true  
->}
-
-`"DeviceID" is mandatory, any other fields placed will either be added or changed from previous value.`
-```
-Removal of already present fields: pass null as field value.  
-Say in the above example, to remove "WaterResistance" field...  
-
-{  
-"DeviceID" : "M203",  
-"WaterResitance" : null  
-}
-```  
+ 	"DeviceID" : "IP_X",  
+ 	"UnitID" : "IP_X_1",  
+ 	"UnitCondition" : "dead"  
+ }
   
-In the <b>Enter request url</b>, enter : [http://localhost:2000/update/device](http://localhost:2000/update/device)  
+In the <b>Enter request url</b>, enter : [http://localhost:2000/add/unit](http://localhost:2000/add/unit)  
 Press <b>Send</b>
+
+Other units can be similarly added
+
+#### Update a unit (ADMIN ONLY)
+
+In the text box below url, enter:
+>{  
+ 	"UnitID" : "IP_X_1",  
+ 	"changes" : { "UnitCondition": "healthy" }  
+ }
+ 
+`"UnitID" is mandatory, "EmployeeRegistrationID" field cannot be updated from here. See below on how to issue or submit a unit.`
+  
+In the <b>Enter request url</b>, enter : [http://localhost:2000/update/unit](http://localhost:2000/update/unit)  
+Press <b>Send</b>
+
+#### Query units
+ 
+In the text box below url, enter:  
+`Say we want to query all healthy iPhone X units which have not been issued to anyone`  
+ 
+>{  
+ 	"DeviceID" : "IP_X",  
+ 	"EmployeeRegistrationID": "none",  
+ 	"UnitCondition" : "healthy"  
+ }
+  
+In the <b>Enter request url</b>, enter : [http://localhost:2000/query/unit](http://localhost:2000/query/unit)  
+Press <b>Send</b>
+
+#### Issue a unit
+
+In the text box below url, enter:
+>{  
+ 	"UnitID" : "IP_X_1",  
+ 	"EmployeeRegistrationID" : "sam121"  
+ }
+ 
+ `Only "UnitID" and a valid "EmployeeRegistrationID" (equal to "EmployeeID") is allowed.`
+ 
+ In the <b>Enter request url</b>, enter : [http://localhost:2000/unit/issue](http://localhost:2000/unit/issue)  
+ Press <b>Send</b>
+ 
+ #### Submit a unit
+ 
+ In the text box below url, enter:
+ >{  
+  	"UnitID": "IP_X_1"  
+  }
+ 
+ `Only "UnitID" is allowed.`
+ 
+ In the <b>Enter request url</b>, enter : [http://localhost:2000/unit/submit](http://localhost:2000/unit/submit)  
+ Press <b>Send</b>
+ 
+ #### Delete a unit (ADMIN ONLY)
+ 
+ In the text box below url, enter:
+  >{  
+   	"UnitID": "IP_X_1"  
+   }
+  
+  `Only "UnitID" is allowed.`
+  
+  In the <b>Enter request url</b>, enter : [http://localhost:2000/delete/unit](http://localhost:2000/delete/unit)  
+  Press <b>Send</b>
+  

@@ -91,11 +91,11 @@ expApp.post('/delete/unit', (req, res) => {
 });
 
 expApp.post('/query/employee/', (req, res) => {
-    //authenticator.handleAuthorization(req, res, (tokenData) => {
+    authenticator.handleAuthorization(req, res, (tokenData) => {
         DBOpObj.queryDB(DBOperation.COLLECTION_NAME_EMPLOYEE, req.body, (request, response) => {
             genericDBoperatinHandler(request, response, res);
         }, true);
-    //});
+    });
 });
 
 expApp.post('/add/employee', (req, res) => {
@@ -108,11 +108,11 @@ expApp.post('/add/employee', (req, res) => {
 
 
 expApp.post('/update/employee', (req, res) => {
-    //authenticator.handleAuthorization(req, res, (tokenData) => {
+    authenticator.handleAuthorization(req, res, (tokenData) => {
         DBOpObj.updateEmployee(req.body, (request, response) => {
             genericDBoperatinHandler(request, response, res);
         });
-    //});
+    });
 });
 
 expApp.post('/delete/employee', (req, res) => {

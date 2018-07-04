@@ -8,7 +8,6 @@ function generateToken(eid, isAdmin, callback){
     jData[DBOperation.KEY_EMPLOYEE_ID] = eid;
     jData[DBOperation.KEY_EMPLOYEE_ISADMIN] = isAdmin;
     jwt.sign(jData, AUTH_KEY, {expiresIn: '30m'}, (err, token) => {
-        console.log(jData);
         if (!err)
             callback(token);
         else callback(null);

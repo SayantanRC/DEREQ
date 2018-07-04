@@ -99,10 +99,8 @@ expApp.post('/query/employee/', (req, res) => {
 });
 
 expApp.post('/add/employee', (req, res) => {
-    authenticator.handleAuthorization(req, res, (tokenData) => {
-        DBOpObj.addEmployee(req.body, (request, response) => {
-            genericDBoperatinHandler(request, response, res);
-        });
+    DBOpObj.addEmployee(req.body, (request, response) => {
+        genericDBoperatinHandler(request, response, res);
     });
 });
 

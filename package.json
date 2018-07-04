@@ -1,11 +1,27 @@
 {
-  "name": "DEREQ",
-  "version": "0.0.1",
+  "name": "dereq",
+  "version": "1.0.0",
+  "description": "Device Enquiry and Requisition system",
+  "main": "index.js",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "express": "^4.16.3",
     "joi": "^13.4.0",
     "jsonwebtoken": "^8.3.0",
     "mongodb": "~3.0.8"
-  }
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SayantanRC/DEREQ.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SayantanRC/DEREQ/issues"
+  },
+  "homepage": "https://github.com/SayantanRC/DEREQ#readme"
 }

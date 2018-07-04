@@ -219,3 +219,13 @@ In the text box below url, enter:
   
   In the <b>Enter request url</b>, enter : [http://localhost:2000/delete/unit](http://localhost:2000/delete/unit)  
   Press <b>Send</b>
+  
+#### See logs - get all log data (ADMIN ONLY)
+
+In the <b>Enter request url</b>, enter : [http://localhost:2000/log/get](http://localhost:2000/log/get)  
+Press <b>Send</b>
+
+#### Clear all logs (ADMIN ONLY)
+
+In the <b>Enter request url</b>, enter : [http://localhost:2000/log/clear](http://localhost:2000/log/clear)  
+Press <b>Send</b>

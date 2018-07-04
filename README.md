@@ -42,6 +42,32 @@ In the text box below url, enter:
 In the <b>Enter request url</b>, enter : [http://localhost:2000/login](http://localhost:2000/login)  
 Press <b>Send</b>
 
+#### Update data of an employee/user
+
+In the text box below url, enter:
+>{  
+ 	"EmployeeID" : "sam121",  
+ 	"changes" : {  
+ 	"Password" : "newPass",  
+ 	"MobileNo" : 9757401228  
+ 	}  
+ }
+  
+In the <b>Enter request url</b>, enter : [http://localhost:2000/update/unit](http://localhost:2000/update/unit)  
+Press <b>Send</b>
+
+#### Delete an employee/user
+
+In the text box below url, enter:
+>{  
+ 	"EmployeeID" : "sam121"  
+ }
+ 
+`Only "EmployeeID" is allowed.`
+ 
+In the <b>Enter request url</b>, enter : [http://localhost:2000/delete/employee](http://localhost:2000/delete/employee)  
+Press <b>Send</b>
+
 #### Add a device (ADMIN ONLY)
 
 In the text box below url, enter:
@@ -193,4 +219,3 @@ In the text box below url, enter:
   
   In the <b>Enter request url</b>, enter : [http://localhost:2000/delete/unit](http://localhost:2000/delete/unit)  
   Press <b>Send</b>
-  

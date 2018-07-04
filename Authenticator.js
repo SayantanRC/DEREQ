@@ -31,7 +31,7 @@ function handleAuthorization(req, res, callback, isAdmin){
                 if (!isAdmin) {
                     callback(response);
                 }
-                else if (isAdmin && response[DBOperation.KEY_EMPLOYEE_ISADMIN]) {
+                else if (isAdmin && response[DBOperation.KEY_EMPLOYEE_ISADMIN] === true) {
                     callback(response);
                 }
                 else {

@@ -95,7 +95,7 @@ expApp.post('/query/employee/', (req, res) => {
         DBOpObj.queryDB(DBOperation.COLLECTION_NAME_EMPLOYEE, req.body, (request, response) => {
             genericDBoperatinHandler(request, response, res);
         }, true);
-    });
+    }, true);
 });
 
 expApp.post('/add/employee', (req, res) => {

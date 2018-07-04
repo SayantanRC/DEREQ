@@ -196,7 +196,7 @@ class DBOperation {
                                         }
                                         let updated_doc = {};
                                         for (let key2 in combined_doc) {
-                                            if (combined_doc[key2])
+                                            if (combined_doc[key2] !== null && combined_doc[key2] !== undefined)
                                                 updated_doc[key2] = combined_doc[key2];
                                         }
 

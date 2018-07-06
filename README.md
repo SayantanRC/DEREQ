@@ -16,6 +16,8 @@ This is a prototype... long way to finish...
 3. Select <b>raw</b> radiobutton
 4. Click on the dropdown <b>Text</b> and select <b>JSON(application/json)</b>
 
+[Reference for token management](https://github.com/SayantanRC/DEREQ/blob/master/docs/login.md)
+
 #### Add a new employee/user
 
 In the text box below url, enter:
@@ -41,6 +43,8 @@ In the text box below url, enter:
 
 In the <b>Enter request url</b>, enter : [http://localhost:2000/login](http://localhost:2000/login)  
 Press <b>Send</b>
+
+[Detailed reference](https://github.com/SayantanRC/DEREQ/blob/master/docs/login.md)
 
 #### Update data of an employee/user
 

@@ -33,6 +33,8 @@ In the text box below url, enter:
 In the <b>Enter request url</b>, enter : [http://localhost:2000/add/employee](http://localhost:2000/add/employee)  
 Press <b>Send</b>
 
+[Detailed reference](https://github.com/SayantanRC/DEREQ/blob/master/docs/add_employee.md)
+
 #### Login to get a token
 
 In the text box below url, enter:
@@ -57,8 +59,10 @@ In the text box below url, enter:
  	}  
  }
   
-In the <b>Enter request url</b>, enter : [http://localhost:2000/update/unit](http://localhost:2000/update/unit)  
+In the <b>Enter request url</b>, enter : [http://localhost:2000/update/employee](http://localhost:2000/update/employee)  
 Press <b>Send</b>
+
+[Detailed reference](https://github.com/SayantanRC/DEREQ/blob/master/docs/update_employee.md)
 
 #### Delete an employee/user
 
@@ -71,6 +75,8 @@ In the text box below url, enter:
  
 In the <b>Enter request url</b>, enter : [http://localhost:2000/delete/employee](http://localhost:2000/delete/employee)  
 Press <b>Send</b>
+
+[Detailed reference](https://github.com/SayantanRC/DEREQ/blob/master/docs/delete_employee.md)
 
 #### Add a device (ADMIN ONLY)
 

@@ -557,6 +557,7 @@ class DBOperation {
     updateEmployee(jsonEmployeeData, callback, empID) {
 
         const requiredSchema = {};
+
         requiredSchema[KEY_EMPLOYEE_NAME] = Joi.string().min(3);
         requiredSchema[KEY_EMPLOYEE_ID] = Joi.string().min(3);
         requiredSchema[KEY_EMPLOYEE_EMAIL] = Joi.string().email();
@@ -565,9 +566,12 @@ class DBOperation {
         requiredSchema[KEY_EMPLOYEE_ISADMIN] = Joi.boolean();
         requiredSchema[KEY_EMPLOYEE_ISACTIVE] = Joi.boolean();
 
-        let passwd = jsonEmployeeData[KEY_CHANGES][KEY_EMPLOYEE_PASSWD];
-        let salt = bcryptjs.genSaltSync(10);
-        if (passwd) jsonEmployeeData[KEY_CHANGES][KEY_EMPLOYEE_PASSWD] = bcryptjs.hashSync(passwd, salt);
+        try {
+            let passwd = jsonEmployeeData[KEY_CHANGES][KEY_EMPLOYEE_PASSWD];
+            let salt = bcryptjs.genSaltSync(10);
+            if (passwd) jsonEmployeeData[KEY_CHANGES][KEY_EMPLOYEE_PASSWD] = bcryptjs.hashSync(passwd, salt);
+        }
+        catch (e){}
 
         this.updateDB(jsonEmployeeData, requiredSchema, true, COLLECTION_NAME_EMPLOYEE, KEY_EMPLOYEE_ID, ACTION_EMPLOYEE_UPDATE, callback, empID);
     }

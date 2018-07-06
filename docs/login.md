@@ -1,4 +1,4 @@
-# How to send tokens in Postman
+# Login, send and manage tokens
 ### Login to get a token
 
  - Login with a valid employee id and password:  

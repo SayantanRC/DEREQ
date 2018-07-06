@@ -67,4 +67,4 @@ var request = require('request');
 - Status code 500 : <b>Login token generation error</b> - Check if `mongod` server is running
 - Status code 404 : <b>Account not found</b> - The given `EmployeeID` is not registered in the database.
 - Status code 401 : <b>Wrong password</b> - The `Password` field does not match with `EmployeeID`
-- Status code 401 : <b>Inactive account</b> - The account with the given `EmployeeID` isn't active.
+- Status code 401 : <b>Inactive account</b> - The account with the given `EmployeeID` isn't active (`IsActive` is set to false).

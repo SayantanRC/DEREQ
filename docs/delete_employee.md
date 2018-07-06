@@ -10,7 +10,7 @@ An employee/user should have option to remove his/her account. This section show
      
      `Only "EmployeeID" is allowed.`
      
- - Send the payload to **http://localhost:2000/delete/employee**
+ - Send the payload to **http://localhost:2000/delete/employee** (might change on how the project is hosted)
 	 
  - Response should be something like:
  ```

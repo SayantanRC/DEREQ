@@ -13,7 +13,7 @@ The `EmployeeID` can be asked from the user, like prompting him/her to choose a 
      	"IsAdmin" : false  
      }  
      
- - Send the payload to **http://localhost:2000/add/employee**
+ - Send the payload to **http://localhost:2000/add/employee** (might change on how the project is hosted)
 	 
  - Response should be something like:
  ```

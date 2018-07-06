@@ -11,7 +11,7 @@ Used to update fields like mobile number or email and even `EmployeeID`. This do
        	}  
        }
      
- - Send the payload to **http://localhost:2000/update/employee**
+ - Send the payload to **http://localhost:2000/update/employee** (might change on how the project is hosted)
 	 
  - Response should be something like:
  ```

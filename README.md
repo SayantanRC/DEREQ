@@ -1,7 +1,7 @@
 # DEREQ - Device Enquiry and Requisition
 
-This is a Node JS based app for performing various types device status enquery and requisition of them.  
-This is a prototype... long way to finish...  
+This is a Node JS based app for performing various types device status enquiry and requisition of them.  
+This project is now in version 1.0  
 
 
 ### USAGE:

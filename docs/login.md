@@ -8,6 +8,8 @@
 	 "Password" : "samirg111"  
 	 }  
 	 
+ - Send the payload to http://localhost:2000/add/employee (might change on how the project is hosted)
+	 
  - Response should be something like:
  ```
  {

@@ -28,7 +28,7 @@ router.post('/query/device/', (req, res) => {
     authenticator.handleAuthorization(req, res, (tokenData) => {
         DBOpObj.queryDB(DBOperation.COLLECTION_NAME_DEVICE, req.body, (request, response) => {
             genericDBoperatinHandler(request, response, res);
-        }, true);
+        }, true, tokenData[DBOperation.KEY_EMPLOYEE_ID]);
     });
 });
 
@@ -36,7 +36,7 @@ router.post('/add/device', (req, res) => {
     authenticator.handleAuthorization(req, res, (tokenData) => {
         DBOpObj.addDevice(req.body, (request, response) => {
             genericDBoperatinHandler(request, response, res);
-        });
+        }, tokenData[DBOperation.KEY_EMPLOYEE_ID]);
     }, true);
 });
 
@@ -44,7 +44,7 @@ router.post('/update/device', (req, res) => {
     authenticator.handleAuthorization(req, res, (tokenData) => {
         DBOpObj.updateDevice(req.body, (request, response) => {
             genericDBoperatinHandler(request, response, res);
-        });
+        }, tokenData[DBOperation.KEY_EMPLOYEE_ID]);
     }, true);
 });
 
@@ -52,7 +52,7 @@ router.post('/delete/device', (req, res) => {
     authenticator.handleAuthorization(req, res, (tokenData) => {
         DBOpObj.deleteDevice(req.body, (request, response) => {
             genericDBoperatinHandler(request, response, res);
-        });
+        }, tokenData[DBOperation.KEY_EMPLOYEE_ID]);
     }, true);
 });
 
@@ -60,7 +60,7 @@ router.post('/query/unit/', (req, res) => {
     authenticator.handleAuthorization(req, res, (tokenData) => {
         DBOpObj.queryDB(DBOperation.COLLECTION_NAME_UNIT, req.body, (request, response) => {
             genericDBoperatinHandler(request, response, res);
-        }, true);
+        }, true, tokenData[DBOperation.KEY_EMPLOYEE_ID]);
     })
 });
 
@@ -68,7 +68,7 @@ router.post('/add/unit', (req, res) => {
     authenticator.handleAuthorization(req, res, (tokenData) => {
         DBOpObj.addUnit(req.body, (request, response) => {
             genericDBoperatinHandler(request, response, res);
-        });
+        }, tokenData[DBOperation.KEY_EMPLOYEE_ID]);
     }, true);
 });
 
@@ -77,7 +77,7 @@ router.post('/update/unit', (req, res) => {
     authenticator.handleAuthorization(req, res, (tokenData) => {
         DBOpObj.updateUnit(req.body, (request, response) => {
             genericDBoperatinHandler(request, response, res);
-        });
+        }, tokenData[DBOperation.KEY_EMPLOYEE_ID]);
     }, true);
 });
 
@@ -85,7 +85,7 @@ router.post('/delete/unit', (req, res) => {
     authenticator.handleAuthorization(req, res, (tokenData) => {
         DBOpObj.deleteUnit(req.body, (request, response) => {
             genericDBoperatinHandler(request, response, res);
-        });
+        }, tokenData[DBOperation.KEY_EMPLOYEE_ID]);
     }, true);
 });
 
@@ -93,7 +93,7 @@ router.post('/query/employee/', (req, res) => {
     authenticator.handleAuthorization(req, res, (tokenData) => {
         DBOpObj.queryDB(DBOperation.COLLECTION_NAME_EMPLOYEE, req.body, (request, response) => {
             genericDBoperatinHandler(request, response, res);
-        }, true);
+        }, true, tokenData[DBOperation.KEY_EMPLOYEE_ID]);
     }, true);
 });
 
@@ -108,7 +108,7 @@ router.post('/update/employee', (req, res) => {
     authenticator.handleAuthorization(req, res, (tokenData) => {
         DBOpObj.updateEmployee(req.body, (request, response) => {
             genericDBoperatinHandler(request, response, res);
-        });
+        }, tokenData[DBOperation.KEY_EMPLOYEE_ID]);
     });
 });
 
@@ -116,7 +116,7 @@ router.post('/delete/employee', (req, res) => {
     authenticator.handleAuthorization(req, res, (tokenData) => {
         DBOpObj.deleteEmployee(req.body, (request, response) => {
             genericDBoperatinHandler(request, response, res);
-        });
+        }, tokenData[DBOperation.KEY_EMPLOYEE_ID]);
     });
 });
 
@@ -124,7 +124,7 @@ router.post('/unit/issue', (req, res) => {
     authenticator.handleAuthorization(req, res, (tokenData) => {
         DBOpObj.issueUnit(req.body, (request, response) => {
             genericDBoperatinHandler(request, response, res);
-        });
+        }, tokenData[DBOperation.KEY_EMPLOYEE_ID]);
     });
 });
 
@@ -132,7 +132,7 @@ router.post('/unit/submit', (req, res) => {
     authenticator.handleAuthorization(req, res, (tokenData) => {
         DBOpObj.submitUnit(req.body, (request, response) => {
             genericDBoperatinHandler(request, response, res);
-        });
+        }, tokenData[DBOperation.KEY_EMPLOYEE_ID]);
     });
 });
 
@@ -148,7 +148,7 @@ router.post('/log/clear', (req, res) => {
     authenticator.handleAuthorization(req, res, (tokenData) => {
         DBOpObj.logger.clearLog((request, response) => {
             genericDBoperatinHandler(request, response, res);
-        })
+        }, tokenData[DBOperation.KEY_EMPLOYEE_ID])
     }, true);
 });
 

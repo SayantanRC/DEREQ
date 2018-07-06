@@ -67,7 +67,7 @@ class DBOperation {
         this.logger = new Logger.Logger(DBname, this.DBUrl);
     }
 
-    queryDB(collectionName, jsonQuery, callback, doLog) {
+    queryDB(collectionName, jsonQuery, callback, doLog, empID) {
         mongoConnector.onMongoConnect(this.DBUrl, callback, (db) => {
             if (db) {
                 db.db(this.DBName).collection(collectionName).find(jsonQuery).toArray((err, res) => {
@@ -83,7 +83,7 @@ class DBOperation {
                     }
                     else {
                         if (doLog === true){
-                            this.logger.pushToLog(ACTION_QUERY_COMPLETE, collectionName, jsonQuery)
+                            this.logger.pushToLog(ACTION_QUERY_COMPLETE, collectionName, jsonQuery, empID)
                         }
 
                         callback(ACTION_QUERY_COMPLETE, {"result": RESULT_OK, "response": res});
@@ -93,7 +93,7 @@ class DBOperation {
         });
     }
 
-    addToDB(jsonData, requiredSchema, ifAllowUnknown, collectionName, uniqueIDName, actionName, callback){
+    addToDB(jsonData, requiredSchema, ifAllowUnknown, collectionName, uniqueIDName, actionName, callback, empID){
 
         mongoConnector.onMongoConnect(this.DBUrl, callback, (db) => {
             if (db) {
@@ -127,7 +127,7 @@ class DBOperation {
                                     });
                                 }
                                 else {
-                                    this.logger.pushToLog(actionName, collectionName, jsonData);
+                                    this.logger.pushToLog(actionName, collectionName, jsonData, empID);
                                     callback(actionName, {"result": RESULT_OK, "response": res})
                                 }
                             })
@@ -157,7 +157,7 @@ class DBOperation {
 
     }
 
-    updateDB(jsonData, requiredSchema, ifAllowUnknown, collectionName, uniqueIDName, actionName, callback, doNotLog){
+    updateDB(jsonData, requiredSchema, ifAllowUnknown, collectionName, uniqueIDName, actionName, callback, empID, doLog){
 
         mongoConnector.onMongoConnect(this.DBUrl, callback, (db) => {
             if (db) {
@@ -210,8 +210,8 @@ class DBOperation {
                                                 });
                                             }
                                             else {
-                                                if (doNotLog !== false)
-                                                    this.logger.pushToLog(actionName, collectionName, jsonData);
+                                                if (doLog !== false)
+                                                    this.logger.pushToLog(actionName, collectionName, jsonData, empID);
                                                 callback(actionName, {"result": RESULT_OK, "response": res});
                                             }
                                         })
@@ -264,7 +264,7 @@ class DBOperation {
 
     }
 
-    deleteFromDB(jsonData, collectionName, uniqueIDName, actionName, callback){
+    deleteFromDB(jsonData, collectionName, uniqueIDName, actionName, callback, empID){
 
         mongoConnector.onMongoConnect(this.DBUrl, callback, (db) => {
             if (db) {
@@ -290,7 +290,7 @@ class DBOperation {
                                     "response": "Deletion error: " + err
                                 });
                                 else {
-                                    this.logger.pushToLog(actionName, collectionName, jsonData);
+                                    this.logger.pushToLog(actionName, collectionName, jsonData, empID);
                                     callback(actionName, {"result": RESULT_OK, "response": res});
                                 }
                             });
@@ -320,13 +320,13 @@ class DBOperation {
 
     }
 
-    addDevice(jsonDeviceData, callback) {
+    addDevice(jsonDeviceData, callback, empID) {
 
         let requiredSchema = {};
         requiredSchema[KEY_DEVICE_ID] = Joi.string().required();
         requiredSchema[KEY_DEVICE_TYPE] = Joi.string().required();
         requiredSchema[KEY_DEVICE_MAKE] = Joi.string().required();
-        requiredSchema[KEY_DEVICE_MODEL] = Joi.string().required();
+        requiredSchema[KEY_DEVICE_MODEL] = Joi.string().allow('').required();
         requiredSchema[KEY_DEVICE_NAME] = Joi.string().required();
         requiredSchema[KEY_DEVICE_RAM] = Joi.number().required();
         requiredSchema[KEY_DEVICE_STORAGE] = Joi.number().required();
@@ -336,16 +336,16 @@ class DBOperation {
         requiredSchema[KEY_DEVICE_ACCESSORY_STATUS] = Joi.string().valid('available', 'unavailable').required();
         requiredSchema[KEY_DEVICE_COMMENTS] = Joi.string().allow("").required();
 
-        this.addToDB(jsonDeviceData, requiredSchema, true, COLLECTION_NAME_DEVICE, KEY_DEVICE_ID, ACTION_DEVICE_CREATE, callback);
+        this.addToDB(jsonDeviceData, requiredSchema, true, COLLECTION_NAME_DEVICE, KEY_DEVICE_ID, ACTION_DEVICE_CREATE, callback, empID);
     }
 
-    updateDevice(jsonDeviceData, callback) {
+    updateDevice(jsonDeviceData, callback, empID) {
 
         const requiredSchema = {};
         requiredSchema[KEY_DEVICE_ID] = Joi.string();
         requiredSchema[KEY_DEVICE_TYPE] = Joi.string();
         requiredSchema[KEY_DEVICE_MAKE] = Joi.string();
-        requiredSchema[KEY_DEVICE_MODEL] = Joi.string();
+        requiredSchema[KEY_DEVICE_MODEL] = Joi.string().allow('');
         requiredSchema[KEY_DEVICE_NAME] = Joi.string();
         requiredSchema[KEY_DEVICE_RAM] = Joi.number();
         requiredSchema[KEY_DEVICE_STORAGE] = Joi.number();
@@ -355,14 +355,14 @@ class DBOperation {
         requiredSchema[KEY_DEVICE_ACCESSORY_STATUS] = Joi.string().valid('available', 'unavailable');
         requiredSchema[KEY_DEVICE_COMMENTS] = Joi.string().allow("");
 
-        this.updateDB(jsonDeviceData, requiredSchema, true, COLLECTION_NAME_DEVICE, KEY_DEVICE_ID, ACTION_DEVICE_UPDATE, callback);
+        this.updateDB(jsonDeviceData, requiredSchema, true, COLLECTION_NAME_DEVICE, KEY_DEVICE_ID, ACTION_DEVICE_UPDATE, callback, empID);
     }
 
-    deleteDevice(jsonDeviceData, callback) {
-        this.deleteFromDB(jsonDeviceData, COLLECTION_NAME_DEVICE, KEY_DEVICE_ID, ACTION_DEVICE_DELETE, callback);
+    deleteDevice(jsonDeviceData, callback, empID) {
+        this.deleteFromDB(jsonDeviceData, COLLECTION_NAME_DEVICE, KEY_DEVICE_ID, ACTION_DEVICE_DELETE, callback, empID);
     }
 
-    addUnit(jsonUnitData, callback) {
+    addUnit(jsonUnitData, callback, empID) {
 
         let search_item = {};
         let id = jsonUnitData[KEY_DEVICE_ID];
@@ -379,7 +379,7 @@ class DBOperation {
                 requiredSchema[KEY_UNIT_CONDITION] = Joi.string().valid('healthy', 'repair', 'dead').required();
                 jsonUnitData[KEY_EMPLOYEE_REGISTRATION_ID] = "none";
 
-                this.addToDB(jsonUnitData, requiredSchema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_UNIT_CREATE, callback);
+                this.addToDB(jsonUnitData, requiredSchema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_UNIT_CREATE, callback, empID);
 
             }
 
@@ -402,7 +402,7 @@ class DBOperation {
         });
     }
 
-    updateUnit(jsonUnitData, callback){
+    updateUnit(jsonUnitData, callback, empID){
         let search_device = {};
         let dID = jsonUnitData[KEY_CHANGES][KEY_DEVICE_ID];
         if (dID) search_device[KEY_DEVICE_ID] = dID;
@@ -419,7 +419,7 @@ class DBOperation {
                     requiredSchema[KEY_DEVICE_ID] = Joi.string().min(3);
                     requiredSchema[KEY_UNIT_CONDITION] = Joi.string().valid('healthy', 'repair', 'dead');
 
-                    this.updateDB(jsonUnitData, requiredSchema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_UNIT_UPDATE, callback);
+                    this.updateDB(jsonUnitData, requiredSchema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_UNIT_UPDATE, callback, empID);
                 }
                 else {
                     callback(ACTION_UNIT_UPDATE, {"result" : RESULT_BAD_DATA, "response" : `Use issueUnit() or submitUnit() to update ${KEY_EMPLOYEE_REGISTRATION_ID}`});
@@ -446,11 +446,11 @@ class DBOperation {
         });
     }
 
-    deleteUnit(jsonUnitData, callback){
-        this.deleteFromDB(jsonUnitData, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_UNIT_DELETE, callback);
+    deleteUnit(jsonUnitData, callback, empID){
+        this.deleteFromDB(jsonUnitData, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_UNIT_DELETE, callback, empID);
     }
 
-    issueUnit(jsonUnitData, callback){
+    issueUnit(jsonUnitData, callback, empID){
 
         let requiredSchema = {};
         requiredSchema[KEY_UNIT_ID] = Joi.string().min(3).required();
@@ -479,11 +479,11 @@ class DBOperation {
                     this.updateDB(update_unit, schema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_ISSUE_UNIT, (request, response) => {
 
                         if (response.result === RESULT_OK)
-                            this.logger.pushUnitTransaction(ACTION_ISSUE_UNIT, jsonUnitData[KEY_EMPLOYEE_REGISTRATION_ID], jsonUnitData[KEY_UNIT_ID], null);
+                            this.logger.pushUnitTransaction(ACTION_ISSUE_UNIT, jsonUnitData[KEY_EMPLOYEE_REGISTRATION_ID], jsonUnitData[KEY_UNIT_ID], empID, null);
 
                         callback(request, response);
 
-                    }, false);
+                    }, null, false);
                 }
 
                 else if (response.result === RESULT_NO_SUCH_DATA) {
@@ -507,7 +507,7 @@ class DBOperation {
 
     }
 
-    submitUnit(jsonUnitData, callback){
+    submitUnit(jsonUnitData, callback, empID){
 
         let jsonDataCopy = {};
         jsonDataCopy[KEY_UNIT_ID] = jsonUnitData[KEY_UNIT_ID];
@@ -527,10 +527,10 @@ class DBOperation {
 
             this.updateDB(jsonUnitData, requiredSchema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_SUBMIT_UNIT, (request, response) => {
                 if (response.result === RESULT_OK)
-                    this.logger.pushUnitTransaction(ACTION_SUBMIT_UNIT, eid, jsonUnitData[KEY_UNIT_ID], null);
+                    this.logger.pushUnitTransaction(ACTION_SUBMIT_UNIT, eid, jsonUnitData[KEY_UNIT_ID], empID, null);
 
                 callback(request, response);
-            }, false);
+            }, null, false);
 
         });
 
@@ -554,7 +554,7 @@ class DBOperation {
         this.addToDB(jsonEmployeeData, requiredSchema, true, COLLECTION_NAME_EMPLOYEE, KEY_EMPLOYEE_ID, ACTION_EMPLOYEE_CREATE, callback);
     }
 
-    updateEmployee(jsonEmployeeData, callback) {
+    updateEmployee(jsonEmployeeData, callback, empID) {
 
         const requiredSchema = {};
         requiredSchema[KEY_EMPLOYEE_NAME] = Joi.string().min(3);
@@ -569,11 +569,11 @@ class DBOperation {
         let salt = bcryptjs.genSaltSync(10);
         if (passwd) jsonEmployeeData[KEY_CHANGES][KEY_EMPLOYEE_PASSWD] = bcryptjs.hashSync(passwd, salt);
 
-        this.updateDB(jsonEmployeeData, requiredSchema, true, COLLECTION_NAME_EMPLOYEE, KEY_EMPLOYEE_ID, ACTION_EMPLOYEE_UPDATE, callback);
+        this.updateDB(jsonEmployeeData, requiredSchema, true, COLLECTION_NAME_EMPLOYEE, KEY_EMPLOYEE_ID, ACTION_EMPLOYEE_UPDATE, callback, empID);
     }
 
-    deleteEmployee(jsonEmployeeData, callback){
-        this.deleteFromDB(jsonEmployeeData, COLLECTION_NAME_EMPLOYEE, KEY_EMPLOYEE_ID, ACTION_EMPLOYEE_DELETE, callback);
+    deleteEmployee(jsonEmployeeData, callback, empID){
+        this.deleteFromDB(jsonEmployeeData, COLLECTION_NAME_EMPLOYEE, KEY_EMPLOYEE_ID, ACTION_EMPLOYEE_DELETE, callback, empID);
     }
 
 }

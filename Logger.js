@@ -22,12 +22,14 @@ class Logger {
         this.DBUrl = DBUrl;
     }
     
-    pushToLog(action, collectionName, jsonInput, callback){
+    pushToLog(action, collectionName, jsonInput, empID, callback){
 
         let log_entry = {};
         log_entry[KEY_ACTION] = action;
         log_entry[KEY_COLLECTION_NAME] = collectionName;
         log_entry[KEY_INPUT_DATA] = jsonInput;
+        if (empID !== null || empID !== undefined)
+        log_entry[DBOperation.KEY_EMPLOYEE_ID] = empID;
 
         let date = new Date();
 
@@ -49,13 +51,15 @@ class Logger {
         
     }
 
-    pushUnitTransaction(action, eid, uid, callback){
+    pushUnitTransaction(action, eid, uid, empID, callback){
 
         let log_entry = {};
         log_entry[KEY_ACTION] = action;
         log_entry[KEY_COLLECTION_NAME] = DBOperation.COLLECTION_NAME_UNIT;
         log_entry[DBOperation.KEY_EMPLOYEE_REGISTRATION_ID] = eid;
         log_entry[DBOperation.KEY_UNIT_ID] = uid;
+        if (empID !== null || empID !== undefined)
+            log_entry[DBOperation.KEY_EMPLOYEE_ID] = empID;
 
         let date = new Date();
 
@@ -77,13 +81,12 @@ class Logger {
 
     }
 
-    clearLog(callback){
+    clearLog(callback, empID){
 
         mongoConnector.onMongoConnect(this.DBUrl, callback, (db) => {
             db.db(this.DBName).collection(COLLECTION_NAME_LOG).drop((err, res) => {
-                console.log(err);
-                console.log(res);
-                this.pushToLog(ACTION_CLEAR_LOG, COLLECTION_NAME_LOG, {}, null);
+
+                this.pushToLog(ACTION_CLEAR_LOG, COLLECTION_NAME_LOG, {}, empID);
                 db.close();
                 if (err)
                     callback(ACTION_CLEAR_LOG, {"result" : DBOperation.RESULT_ERROR, "response" : err});

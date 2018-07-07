@@ -13,6 +13,9 @@
  - Response should be something like:
  ```
  {
+ "EmployeeID": "sam121",
+ "IsAdmin": false,
+ "EmployeeName": "Samir Ghosh",
  "token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbXBsb3llZUlEIjoiYW51cGFtMTAwIiwiSXNBZG1pbiI6ZmFsc2UsImlhdCI6MTUzMDg4OTE4MywiZXhwIjoxNTMwODkwOTgzfQ.yMZrKDh2sYxlFz1XHaZ0NtIcqpXCzmAtaVPUAYlrwgE"
  }
  ```

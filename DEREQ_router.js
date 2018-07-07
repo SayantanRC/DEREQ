@@ -169,18 +169,20 @@ router.post('/login', (req, res) => {
                 bcryptjs.compare(passwd, response.response[0][DBOperation.KEY_EMPLOYEE_PASSWD], (err, isMatch) => {
 
                     if (isMatch) {
-                        let isActive = response.response[0][DBOperation.KEY_EMPLOYEE_ISACTIVE];
+
                         let isAdmin = response.response[0][DBOperation.KEY_EMPLOYEE_ISADMIN];
 
-                        if (isActive) {
+                        authenticator.generateToken(eid, isAdmin, (token) => {
 
-                            authenticator.generateToken(eid, isAdmin, (token) => {
-                                res.json({
-                                    token
-                                });
-                            })
+                            let tokenInfo = {};
+                            tokenInfo[DBOperation.KEY_EMPLOYEE_ID] = eid;
+                            tokenInfo[DBOperation.KEY_EMPLOYEE_ISADMIN] = isAdmin;
+                            tokenInfo[DBOperation.KEY_EMPLOYEE_NAME] = response.response[0][DBOperation.KEY_EMPLOYEE_NAME];
+                            tokenInfo["token"] = token;
 
-                        }
+                            res.json(tokenInfo);
+                        })
+
                     }
                     else {
                         res.status(401).send("Wrong password");

@@ -101,6 +101,8 @@ Press <b>Send</b>
 
 Other devices can be similarly added
 
+[Detailed reference](https://github.com/SayantanRC/DEREQ/blob/master/docs/add_device.md)
+
 #### Update a device (ADMIN ONLY)
 
 In the text box below url, enter:

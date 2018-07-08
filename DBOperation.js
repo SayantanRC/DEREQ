@@ -542,7 +542,7 @@ class DBOperation {
         requiredSchema[KEY_EMPLOYEE_NAME] = Joi.string().min(3).required();
         requiredSchema[KEY_EMPLOYEE_ID] = Joi.string().min(3).required();
         requiredSchema[KEY_EMPLOYEE_EMAIL] = Joi.string().email().required();
-        requiredSchema[KEY_EMPLOYEE_MOBILE] = Joi.number().integer().min(10).required();
+        requiredSchema[KEY_EMPLOYEE_MOBILE] = Joi.string().min(10).required();
         requiredSchema[KEY_EMPLOYEE_PASSWD] = Joi.string().min(6).required();
         requiredSchema[KEY_EMPLOYEE_ISADMIN] = Joi.boolean().required();
 
@@ -561,7 +561,7 @@ class DBOperation {
         requiredSchema[KEY_EMPLOYEE_NAME] = Joi.string().min(3);
         requiredSchema[KEY_EMPLOYEE_ID] = Joi.string().min(3);
         requiredSchema[KEY_EMPLOYEE_EMAIL] = Joi.string().email();
-        requiredSchema[KEY_EMPLOYEE_MOBILE] = Joi.number().integer().min(10);
+        requiredSchema[KEY_EMPLOYEE_MOBILE] = Joi.string().min(10);
         requiredSchema[KEY_EMPLOYEE_PASSWD] = Joi.string().min(6);
         requiredSchema[KEY_EMPLOYEE_ISADMIN] = Joi.boolean();
         requiredSchema[KEY_EMPLOYEE_ISACTIVE] = Joi.boolean();

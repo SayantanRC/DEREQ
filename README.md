@@ -25,7 +25,7 @@ In the text box below url, enter:
 	"EmployeeName" : "Samir Ghosh",  
 	"EmployeeID" : "sam121",  
 	"Email" : "samirghosh95@gmail.com",  
-	"MobileNo" : 9996454321,  
+	"MobileNo" : "9996454321",  
 	"Password" : "samirg111",  
 	"IsAdmin" : false  
 }

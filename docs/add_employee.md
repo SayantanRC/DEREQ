@@ -8,7 +8,7 @@ The `EmployeeID` can be asked from the user, like prompting him/her to choose a 
      	"EmployeeName" : "Samir Ghosh",  
      	"EmployeeID" : "sam121",  
      	"Email" : "samirghosh95@gmail.com",  
-     	"MobileNo" : 9996454321,  
+     	"MobileNo" : "9996454321",  
      	"Password" : "samirg111",  
      	"IsAdmin" : false  
      }  
@@ -30,7 +30,7 @@ The `EmployeeID` can be asked from the user, like prompting him/her to choose a 
                  "EmployeeName": "Samir Ghosh",
                  "EmployeeID": "sam121",
                  "Email": "samirghosh95@gmail.com",
-                 "MobileNo": 9996454321,
+                 "MobileNo": "9996454321",
                  "Password": "$2a$10$uGHW/EGgMD3k5abktVYybOKQdgX0Faobai5aTZwc5qfp8DwKZEd6W",
                  "IsAdmin": false,
                  "IsActive": true,

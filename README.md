@@ -87,10 +87,10 @@ In the text box below url, enter:
  	"DeviceName" : "iPhone X",  
  	"Make" : "Apple",  
  	"Model" : "A1901",  
- 	"RAM" : 3,  
- 	"Storage" : 256,  
+ 	"RAM" : "3 GB",  
+ 	"Storage" : "256 GB",  
  	"OS" : "iOS",  
- 	"OSVersion" : 11,  
+ 	"OSVersion" : "iOS 11",  
  	"Accessories" : ["airpods", "charger"],  
  	"AccessoryAvailabilityStatus" : "available",  
  	"Comments" : ""  
@@ -111,7 +111,7 @@ In the text box below url, enter:
       "changes" :  
       {  
       	"DeviceID": "IP_X",  
-      	"OSVersion" : 12,  
+      	"OSVersion" : "iOS 12",  
       	"WaterResistance" : true  
       }  
  }

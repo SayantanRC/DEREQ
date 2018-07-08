@@ -328,10 +328,10 @@ class DBOperation {
         requiredSchema[KEY_DEVICE_MAKE] = Joi.string().required();
         requiredSchema[KEY_DEVICE_MODEL] = Joi.string().allow('').required();
         requiredSchema[KEY_DEVICE_NAME] = Joi.string().required();
-        requiredSchema[KEY_DEVICE_RAM] = Joi.number().required();
-        requiredSchema[KEY_DEVICE_STORAGE] = Joi.number().required();
+        requiredSchema[KEY_DEVICE_RAM] = Joi.string().required();
+        requiredSchema[KEY_DEVICE_STORAGE] = Joi.string().required();
         requiredSchema[KEY_DEVICE_OS] = Joi.string().required();
-        requiredSchema[KEY_DEVICE_OS_VERSION] = Joi.number().required();
+        requiredSchema[KEY_DEVICE_OS_VERSION] = Joi.string().required();
         requiredSchema[KEY_DEVICE_ACCESSORY] = Joi.array().items(Joi.string()).required();
         requiredSchema[KEY_DEVICE_ACCESSORY_STATUS] = Joi.string().valid('available', 'unavailable').required();
         requiredSchema[KEY_DEVICE_COMMENTS] = Joi.string().allow("").required();
@@ -347,10 +347,10 @@ class DBOperation {
         requiredSchema[KEY_DEVICE_MAKE] = Joi.string();
         requiredSchema[KEY_DEVICE_MODEL] = Joi.string().allow('');
         requiredSchema[KEY_DEVICE_NAME] = Joi.string();
-        requiredSchema[KEY_DEVICE_RAM] = Joi.number();
-        requiredSchema[KEY_DEVICE_STORAGE] = Joi.number();
+        requiredSchema[KEY_DEVICE_RAM] = Joi.string();
+        requiredSchema[KEY_DEVICE_STORAGE] = Joi.string();
         requiredSchema[KEY_DEVICE_OS] = Joi.string();
-        requiredSchema[KEY_DEVICE_OS_VERSION] = Joi.number();
+        requiredSchema[KEY_DEVICE_OS_VERSION] = Joi.string();
         requiredSchema[KEY_DEVICE_ACCESSORY] = Joi.array().items(Joi.string());
         requiredSchema[KEY_DEVICE_ACCESSORY_STATUS] = Joi.string().valid('available', 'unavailable');
         requiredSchema[KEY_DEVICE_COMMENTS] = Joi.string().allow("");

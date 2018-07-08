@@ -12,10 +12,10 @@ Similarly, "Samsung Galaxy S8", as a hardware may have `DeviceID` say "SGS8", an
        	"DeviceName" : "iPhone X",  
        	"Make" : "Apple",  
        	"Model" : "A1901",  
-       	"RAM" : 3,  
-       	"Storage" : 256,  
-       	"OS" : "iOS",  
-       	"OSVersion" : 11,  
+ 	    "RAM" : "3 GB",  
+ 	    "Storage" : "256 GB",  
+ 	    "OS" : "iOS",  
+ 	    "OSVersion" : "iOS 11",  
        	"Accessories" : ["airpods", "charger"],  
        	"AccessoryAvailabilityStatus" : "available",  
        	"Comments" : ""  
@@ -40,10 +40,10 @@ Similarly, "Samsung Galaxy S8", as a hardware may have `DeviceID` say "SGS8", an
                  "DeviceName": "iPhone X",
                  "Make": "Apple",
                  "Model": "A1901",
-                 "RAM": 3,
-                 "Storage": 256,
+                 "RAM": "3 GB",
+                 "Storage": "256 GB",
                  "OS": "iOS",
-                 "OSVersion": 11,
+                 "OSVersion": "iOS 11",
                  "Accessories": [
                      "airpods",
                      "charger"

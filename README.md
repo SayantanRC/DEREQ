@@ -208,6 +208,8 @@ In the text box below url, enter:
  In the <b>Enter request url</b>, enter : [http://localhost:2000/unit/issue](http://localhost:2000/unit/issue)  
  Press <b>Send</b>
  
+ [How to see issued units for an employee](https://github.com/SayantanRC/DEREQ/blob/master/docs/query_issued_units.md)
+ 
  #### Submit a unit
  
  In the text box below url, enter:

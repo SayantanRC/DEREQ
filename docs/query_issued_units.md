@@ -4,7 +4,7 @@ An employee/user can register for multiple units. It can be great if those units
    
  - In the payload, send:
 	 >{  
-       	"EmployeeRegistrationID" : "sam121"
+       	"EmployeeRegistrationID" : "sam121"  
       }  
      
  - Send the payload to **http://localhost:2000/query/unit** (might change on how the project is hosted)

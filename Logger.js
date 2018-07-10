@@ -152,10 +152,15 @@ class Logger {
 
     }
 
-    getLog(jsonQuery, callback){
+    getLog(jsonQuery, callback, empID, isAdmin){
 
         //this function returns the logs
         //it can also query on a given json body
+
+        //return only logs of a particular employee if isAdmin is false
+        if (!isAdmin){
+            jsonQuery[DBOperation.KEY_EMPLOYEE_ID] = empID;
+        }
 
         mongoConnector.onMongoConnect(this.DBUrl, callback, (db) => {
 

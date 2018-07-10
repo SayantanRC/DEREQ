@@ -914,8 +914,8 @@ class DBOperation {
                                     }
                                     else {
                                         //success
-                                        this.logger.pushUnitTransaction(ACTION_SUBMIT_UNIT, jsonUnitData[KEY_EMPLOYEE_REGISTRATION_ID], jsonUnitData[KEY_UNIT_ID], empID, null);
-                                        callback(ACTION_ISSUE_UNIT, {
+                                        this.logger.pushUnitTransaction(ACTION_SUBMIT_UNIT, eid, jsonUnitData[KEY_UNIT_ID], empID, null);
+                                        callback(ACTION_SUBMIT_UNIT, {
                                             "result": RESULT_OK,
                                             "response": res
                                         });

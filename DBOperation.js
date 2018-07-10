@@ -731,44 +731,125 @@ class DBOperation {
         this.deleteFromDB(jsonUnitData, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_UNIT_DELETE, callback, empID);
     }
 
-    issueUnit(jsonUnitData, callback, empID){
+    issueUnit(jsonUnitData, callback, empID, isAdmin){
 
+        //method to issue a unit
+
+        //this method issues a unit to an "EmployeeRegistrationID"
+        //the method succeeds if the device is not previously issued
+        //    OR
+        //if the isAdmin status (returned from token decryption) is true
+
+        //setting requiredSchema
+        /*
+        *
+        * Expected:
+        * {
+        *       "EmployeeRegistrationID" : <value>,
+        *       "UnitID" : <value>
+        * }
+        *
+        * */
         let requiredSchema = {};
         requiredSchema[KEY_UNIT_ID] = Joi.string().min(3).required();
         requiredSchema[KEY_EMPLOYEE_REGISTRATION_ID] = Joi.string().min(3).required();
 
+        //validate the schema
         const result = Joi.validate(jsonUnitData, requiredSchema);
 
+        //if not according to requiredSchema, return RESULT_BAD_DATA
         if (result.error) callback(ACTION_ISSUE_UNIT, {"result": RESULT_BAD_DATA, "response": result.error.details[0].message});
         else {
 
+            //make a search item to validate given "EmployeeRegistrationID"
             let search_employee = {};
             search_employee[KEY_EMPLOYEE_ID] = jsonUnitData[KEY_EMPLOYEE_REGISTRATION_ID];
 
-            let update_unit = {}, changes = {};
-            update_unit[KEY_UNIT_ID] = jsonUnitData[KEY_UNIT_ID];
-            changes[KEY_EMPLOYEE_REGISTRATION_ID] = jsonUnitData[KEY_EMPLOYEE_REGISTRATION_ID];
-            update_unit[KEY_CHANGES] = changes;
+            //make a search item to validate given "UnitID"
+            let search_unit = {};
+            search_unit[KEY_UNIT_ID] = jsonUnitData[KEY_UNIT_ID];
 
-            let schema = {};
-            schema[KEY_EMPLOYEE_REGISTRATION_ID] = Joi.string().min(3).required();
+            //query the employee id
+            this.queryDB(COLLECTION_NAME_EMPLOYEE, search_employee, (request, response1) => {
 
-            this.queryDB(COLLECTION_NAME_EMPLOYEE, search_employee, (request, response) => {
+                if (response1.result === RESULT_OK) {
 
-                if (response.result === RESULT_OK) {
+                    //given "EmployeeRegistrationID" exists as "EmployeeID" in the collection "employee_collection"
 
-                    this.updateDB(update_unit, schema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_ISSUE_UNIT, (request, response) => {
+                    //now query for the "UnitID"
+                    this.queryDB(COLLECTION_NAME_UNIT, search_unit, (request2, response2) => {
 
-                        if (response.result === RESULT_OK)
-                            this.logger.pushUnitTransaction(ACTION_ISSUE_UNIT, jsonUnitData[KEY_EMPLOYEE_REGISTRATION_ID], jsonUnitData[KEY_UNIT_ID], empID, null);
+                        if (response2.result === RESULT_OK){
+                            //given "UnitID" exists in the collection "unit_collection"
 
-                        callback(request, response);
+                            //check if isAdmin is true or if device is available
+                            if (isAdmin || response2.response[0][KEY_EMPLOYEE_REGISTRATION_ID] === "none"){
 
-                    }, null, false);
+                                //connect to mongo db to update
+                                mongoConnector.onMongoConnect(this.DBUrl, callback, (db) => {
+
+                                    if (db)
+                                    {
+                                        //connection successful
+                                        //update the "EmployeeRegistrationID" for the given "UnitID"
+                                        db.db(this.DBName).collection(COLLECTION_NAME_UNIT).update(search_unit, jsonUnitData, (err, res) => {
+
+                                            //close database
+                                            db.close();
+
+                                            if (err) {
+                                                //error
+                                                callback(ACTION_ISSUE_UNIT, {
+                                                    "result": RESULT_ERROR,
+                                                    "response": "Issue error: " + err
+                                                });
+                                            }
+                                            else {
+                                                //success
+                                                this.logger.pushUnitTransaction(ACTION_ISSUE_UNIT, jsonUnitData[KEY_EMPLOYEE_REGISTRATION_ID], jsonUnitData[KEY_UNIT_ID], empID, null);
+                                                callback(ACTION_ISSUE_UNIT, {
+                                                    "result": RESULT_OK,
+                                                    "response": res
+                                                });
+                                            }
+
+                                        })
+                                    }
+                                })
+
+                            }
+
+                            else {
+                                //if device is issued to someone else
+                                callback(ACTION_ISSUE_UNIT, {
+                                    "result": RESULT_BAD_DATA,
+                                    "response": `${jsonUnitData[KEY_UNIT_ID]} is already issued to someone else`
+                                });
+                            }
+
+                        }
+
+                        else if (response2.result === RESULT_NO_SUCH_DATA) {
+                            //if the asked "UnitID" does not change
+                            callback(ACTION_ISSUE_UNIT, {
+                                "result": RESULT_NO_SUCH_DATA,
+                                "response": `${KEY_UNIT_ID} : ${jsonUnitData[KEY_UNIT_ID]}`
+                            });
+                        }
+
+                        else {
+                            //error while querying "UnitID"
+                            callback(ACTION_ISSUE_UNIT, {
+                                "result": RESULT_ERROR,
+                                "response": `Unit validation error: ${response2.response}`
+                            });
+                        }
+
+                    });
                 }
 
-                else if (response.result === RESULT_NO_SUCH_DATA) {
-
+                else if (response1.result === RESULT_NO_SUCH_DATA) {
+                    //given "EmployeeRegistrationID" is invalid
                     callback(ACTION_ISSUE_UNIT, {
                         "result": RESULT_NO_SUCH_DATA,
                         "response": `${KEY_EMPLOYEE_REGISTRATION_ID} : ${jsonUnitData[KEY_EMPLOYEE_REGISTRATION_ID]}`
@@ -777,9 +858,10 @@ class DBOperation {
                 }
 
                 else {
+                    //employee could not be queried
                     callback(ACTION_ISSUE_UNIT, {
                         "result": RESULT_ERROR,
-                        "response": "Validation error " + response.response
+                        "response": "Employee validation error " + response1.response
                     })
                 }
             })
@@ -788,32 +870,91 @@ class DBOperation {
 
     }
 
-    submitUnit(jsonUnitData, callback, empID){
+    submitUnit(jsonUnitData, callback, empID, isAdmin){
 
-        let jsonDataCopy = {};
-        jsonDataCopy[KEY_UNIT_ID] = jsonUnitData[KEY_UNIT_ID];
         let eid;
 
-        let changes = {};
-        changes[KEY_EMPLOYEE_REGISTRATION_ID] = "none";
-        jsonUnitData[KEY_CHANGES] = changes;
-
         const requiredSchema = {};
-        requiredSchema[KEY_EMPLOYEE_REGISTRATION_ID] = Joi.string().min(3);
+        requiredSchema[KEY_UNIT_ID] = Joi.string().min(3);
 
-        this.queryDB(COLLECTION_NAME_UNIT, jsonDataCopy, (request, response) => {
+        const result = Joi.validate(jsonUnitData, requiredSchema);
 
-            if (response.response[0])
-            eid = response.response[0][KEY_EMPLOYEE_REGISTRATION_ID];
+        //if not according to requiredSchema, return RESULT_BAD_DATA
+        if (result.error) callback(ACTION_SUBMIT_UNIT, {"result": RESULT_BAD_DATA, "response": result.error.details[0].message});
+        else {
 
-            this.updateDB(jsonUnitData, requiredSchema, false, COLLECTION_NAME_UNIT, KEY_UNIT_ID, ACTION_SUBMIT_UNIT, (request, response) => {
-                if (response.result === RESULT_OK)
-                    this.logger.pushUnitTransaction(ACTION_SUBMIT_UNIT, eid, jsonUnitData[KEY_UNIT_ID], empID, null);
+            this.queryDB(COLLECTION_NAME_UNIT, jsonUnitData, (request, response) => {
 
-                callback(request, response);
-            }, null, false);
+                if (response.result === RESULT_OK) {
 
-        });
+                    if (response.response[0])
+                        eid = response.response[0][KEY_EMPLOYEE_REGISTRATION_ID];
+
+                    if (isAdmin || eid === empID) {
+
+                        //connect to mongo db to update
+                        mongoConnector.onMongoConnect(this.DBUrl, callback, (db) => {
+
+                            if (db) {
+
+                                response.response[0][KEY_EMPLOYEE_REGISTRATION_ID] = "none";
+                                //connection successful
+                                //update the "EmployeeRegistrationID" for the given "UnitID"
+                                db.db(this.DBName).collection(COLLECTION_NAME_UNIT).update(jsonUnitData, response.response[0], (err, res) => {
+
+                                    //close database
+                                    db.close();
+
+                                    if (err) {
+                                        //error
+                                        callback(ACTION_SUBMIT_UNIT, {
+                                            "result": RESULT_ERROR,
+                                            "response": "Issue error: " + err
+                                        });
+                                    }
+                                    else {
+                                        //success
+                                        this.logger.pushUnitTransaction(ACTION_SUBMIT_UNIT, jsonUnitData[KEY_EMPLOYEE_REGISTRATION_ID], jsonUnitData[KEY_UNIT_ID], empID, null);
+                                        callback(ACTION_ISSUE_UNIT, {
+                                            "result": RESULT_OK,
+                                            "response": res
+                                        });
+                                    }
+
+                                })
+                            }
+                        })
+                    }
+                    else {
+                        //if device is issued to someone else
+                        callback(ACTION_SUBMIT_UNIT, {
+                            "result": RESULT_BAD_DATA,
+                            "response": `${jsonUnitData[KEY_UNIT_ID]} is not issued to you, so you can not submit it.`
+                        });
+                    }
+                }
+
+                else if (response.result === RESULT_NO_SUCH_DATA){
+                    //given "UnitID" is invalid
+                    callback(ACTION_SUBMIT_UNIT, {
+                        "result": RESULT_NO_SUCH_DATA,
+                        "response": `${KEY_UNIT_ID} : ${jsonUnitData[KEY_UNIT_ID]}`
+                    });
+                }
+
+                else {
+                    //"UnitID" could not be queried
+                    callback(ACTION_SUBMIT_UNIT, {
+                        "result": RESULT_ERROR,
+                        "response": "Unit validation error " + response.response
+                    })
+                }
+
+            });
+
+
+        }
+
 
     }
 

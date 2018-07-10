@@ -35,6 +35,8 @@ Used to update fields like mobile number or email and even `EmployeeID`. This do
     - `result` : `RESULT_OK` - The employee details were updated. 
 - Status code 409  
     - `result` : `RESULT_DUPLICATE_ID` - Occurs if `EmployeeID` is changed under `changes`, and the id is already taken by someone else.  
+- Status code 404
+    - `result` : `RESULT_NO_SUCH_DATA` - The employee with the given `EmployeeID` does not exist.
 - Status code 400
     - `result` : `RESULT_BAD_DATA` - An expected value was not present in the JSON body. See the `message` field for details.
 - Status code 500

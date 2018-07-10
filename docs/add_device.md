@@ -1,4 +1,5 @@
 # Add a new device
+#### (ADMIN ONLY)
 
 A "device" specifies a hardware profile for which there are many "units" with the same specification.  
 Example, we can have many Google Pixel devices, and many Samsung Galaxy S8 devices.
@@ -7,18 +8,20 @@ Similarly, "Samsung Galaxy S8", as a hardware may have `DeviceID` say "SGS8", an
    
  - In the payload, send:
 	 >{  
-       	"DeviceID" : "IPX",  
-       	"DeviceType" : "mobile",  
-       	"DeviceName" : "iPhone X",  
-       	"Make" : "Apple",  
-       	"Model" : "A1901",  
- 	    "RAM" : "3 GB",  
- 	    "Storage" : "256 GB",  
- 	    "OS" : "iOS",  
- 	    "OSVersion" : "iOS 11",  
-       	"Accessories" : ["airpods", "charger"],  
-       	"AccessoryAvailabilityStatus" : "available",  
-       	"Comments" : ""  
+       	"DeviceID": "GP1",  
+        "DeviceType": "mobile",  
+        "DeviceName": "Google Pixel",  
+        "Make": "Google",  
+        "Model": "",  
+        "RAM": "3 GB",  
+        "Storage": "256 GB",  
+        "OS": "Android",  
+        "OSVersion": "Android 8.1 Oreo",  
+        "Accessories": [  
+            "charger"  
+        ],  
+        "AccessoryAvailabilityStatus": "available",  
+        "Comments": ""  
       }  
      
  - Send the payload to **http://localhost:2000/add/device** (might change on how the project is hosted)
@@ -35,27 +38,26 @@ Similarly, "Samsung Galaxy S8", as a hardware may have `DeviceID` say "SGS8", an
          },
          "ops": [
              {
-                 "DeviceID": "IPX",
+                 "DeviceID": "GP1",
                  "DeviceType": "mobile",
-                 "DeviceName": "iPhone X",
-                 "Make": "Apple",
-                 "Model": "A1901",
+                 "DeviceName": "Google Pixel",
+                 "Make": "Google",
+                 "Model": "",
                  "RAM": "3 GB",
                  "Storage": "256 GB",
-                 "OS": "iOS",
-                 "OSVersion": "iOS 11",
+                 "OS": "Android",
+                 "OSVersion": "Android 8.1 Oreo",
                  "Accessories": [
-                     "airpods",
                      "charger"
                  ],
                  "AccessoryAvailabilityStatus": "available",
                  "Comments": "",
-                 "_id": "5b410d5c91b3ff5643fcfdb7"
+                 "_id": "5b41f4f55a3b473cd7db46bf"
              }
          ],
          "insertedCount": 1,
          "insertedIds": {
-             "0": "5b410d5c91b3ff5643fcfdb7"
+             "0": "5b41f4f55a3b473cd7db46bf"
          }
      }
  }

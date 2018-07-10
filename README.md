@@ -130,6 +130,8 @@ Say in the above example, to remove "WaterResistance" field...
 In the <b>Enter request url</b>, enter : [http://localhost:2000/update/device](http://localhost:2000/update/device)  
 Press <b>Send</b>
 
+[Detailed reference](https://github.com/SayantanRC/DEREQ/blob/master/docs/update_device.md)
+
 #### Query devices
 
 In the text box below url, enter:

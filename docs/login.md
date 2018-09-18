@@ -43,7 +43,7 @@ var request = require('request');
     //lets search for devices with RAM 3 GB
 
     let reqJson = {
-        "RAM" : 3
+        "RAM" : "3 GB"
     };
 
     request({

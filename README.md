@@ -136,8 +136,8 @@ Press <b>Send</b>
 
 In the text box below url, enter:
 >{  
- 	"RAM" : 3,  
- 	"Storage" : 256  
+ 	"RAM" : "3 GB",  
+ 	"Storage" : "256 GB"  
  }
   
 In the <b>Enter request url</b>, enter : [http://localhost:2000/query/device](http://localhost:2000/query/device)  
